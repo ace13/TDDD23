@@ -3,7 +3,7 @@ find_package(Angelscript REQUIRED)
 
 include_directories(
     ${SFML_INCLUDE_DIR}
-    ${ANGELSCRIPT_INCLUDE_DIR}
+    ${Angelscript_INCLUDE_DIR}
 )
 
 set(GAME_SOURCE
@@ -18,6 +18,8 @@ set(MAIN_SOURCE
     Application.cpp
     Logger.hpp
     Logger.cpp
+    ScriptManager.hpp
+    ScriptManager.cpp
     Telemetry.hpp
     Telemetry.cpp
 )
@@ -27,4 +29,4 @@ source_group(Game FILES ${GAME_SOURCE})
 
 add_executable(game main.cpp ${MAIN_SOURCE} ${GAME_SOURCE})
 
-target_link_libraries(game ${SFML_LIBRARIES} ${ANGELSCRIPT_LIBRARIES})
+target_link_libraries(game ${SFML_LIBRARIES} ${Angelscript_LIBRARIES})

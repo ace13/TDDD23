@@ -11,7 +11,7 @@ if (MSVC)
         message(FATAL_ERROR "You need to compile this project with at least Visual Studio 2010")
     endif ()
 
-    set(CMAKE_CXX_FLAGS "/MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 elseif (UNIX)
     if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
         execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)

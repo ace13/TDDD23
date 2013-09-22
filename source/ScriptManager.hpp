@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cassert>
 
 class asIScriptContext;
 class asIScriptEngine;

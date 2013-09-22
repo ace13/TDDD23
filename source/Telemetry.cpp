@@ -26,15 +26,18 @@ void Telemetry::endFrame()
     while (mFrameTimes.size() > mMaxSamples)
         mFrameTimes.pop_front();
 
-    if (mSecond > 1.f)
+    if (mSecond >= 1.f)
     {
         mFrames.push_back(mCurrentFrames);
+        while (mFrames.size() > mMaxSamples)
+            mFrames.pop_front();
+
         mCurrentFrames = 0;
         mSecond -= 1.f;
     }
 }
 
-void Telemetry::setMaxSamples(int samples)
+void Telemetry::setMaxSamples(unsigned int samples)
 {
     assert(samples > 0);
 
@@ -44,7 +47,7 @@ void Telemetry::setMaxSamples(int samples)
 }
 
 template<typename T>
-inline void getTime(std::deque<T> times, int samples, float& time)
+inline void getTime(const std::deque<T>& times, unsigned int samples, float& time)
 {
     int startS = samples;
     auto it = times.rbegin();
@@ -55,7 +58,7 @@ inline void getTime(std::deque<T> times, int samples, float& time)
     time /= startS;
 }
 
-float Telemetry::getFPS(int samples)
+float Telemetry::getFPS(unsigned int samples) const
 {
     assert(samples > 0 && samples <= mMaxSamples);
 
@@ -65,7 +68,7 @@ float Telemetry::getFPS(int samples)
     return time;
 }
 
-float Telemetry::getMS(int samples)
+float Telemetry::getMS(unsigned int samples) const
 {
     assert(samples > 0 && samples <= mMaxSamples);
 

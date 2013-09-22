@@ -17,16 +17,16 @@ public:
     void startFrame();
     void endFrame();
 
-    void setMaxSamples(int s);
+    void setMaxSamples(unsigned int s);
 
-    float getFPS(int samples = 1);
-    float getMS(int samples = 1);
+    float getFPS(unsigned int samples = 1) const;
+    float getMS(unsigned int samples = 1) const;
 
 private:
     sf::Clock mClock;
-    int mMaxSamples;
-    int mCurrentFrames;
+    unsigned int mMaxSamples;
+    unsigned int mCurrentFrames;
     float mSecond;
-    std::deque<int> mFrames;
+    std::deque<unsigned int> mFrames;
     std::deque<float> mFrameTimes;
 };
