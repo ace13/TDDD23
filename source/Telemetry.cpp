@@ -35,8 +35,8 @@ void Telemetry::setMaxSamples(int samples)
 inline void getTime(std::deque<float> times, int samples, float& time)
 {
     int startS = samples;
-    auto it = times.rbegin();
-    for (;samples --> 0;)
+    std::deque<float>::const_reverse_iterator it = times.rbegin();
+    while (samples --> 0)
     {
         time += *it++;
     }

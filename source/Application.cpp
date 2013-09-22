@@ -2,6 +2,7 @@
 #include <SFML/Window/Event.hpp>
 
 #include <SFML/Graphics/Text.hpp>
+#include <cstdio>
 
 Application::Application()
 {
