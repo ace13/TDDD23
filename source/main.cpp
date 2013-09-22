@@ -1,7 +1,12 @@
-
+#include "Application.hpp"
 
 int main(int argc, char** argv)
 {
+    Application app;
 
-	return 0;
+    app.init(argc, argv);
+
+    app.run();
+
+    return 0;
 }
