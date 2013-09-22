@@ -25,5 +25,8 @@ public:
 private:
     sf::Clock mClock;
     int mMaxSamples;
+    int mCurrentFrames;
+    float mSecond;
+    std::deque<int> mFrames;
     std::deque<float> mFrameTimes;
 };

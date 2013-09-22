@@ -56,7 +56,7 @@ void Application::run()
         f5 = mTelem.getFPS(5);
         f10 = mTelem.getFPS(10);
 
-        sprintf(tmp, "%f\n%f\n%f", f1, f5, f10);
+        sprintf(tmp, "FPS 1/5/10:\n%.2f\n%.2f\n%.2f", f1, f5, f10);
 
         debug.setString(tmp);
     }
