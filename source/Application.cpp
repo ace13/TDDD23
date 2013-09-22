@@ -12,7 +12,7 @@ Application::~Application()
 {
 }
 
-void Application::init(int argc, char** argv)
+void Application::init(int /*argc*/, char** /*argv*/)
 {
 
 }
@@ -38,6 +38,8 @@ void Application::run()
             {
             case sf::Event::Closed:
                 mWindow.close();
+                break;
+            default:
                 break;
             }
         }
