@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Telemetry.hpp"
+#include <SFML/Graphics/RenderWindow.hpp>
+
 class Application
 {
 public:
@@ -10,4 +13,7 @@ public:
     void run();
 
 private:
+    sf::RenderWindow mWindow;
+
+    Telemetry mTelem;
 };

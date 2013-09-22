@@ -12,6 +12,10 @@ set(GAME_SOURCE
 set(MAIN_SOURCE
 	Application.hpp
 	Application.cpp
+	Logger.hpp
+	Logger.cpp
+	Telemetry.hpp
+	Telemetry.cpp
 )
 
 source_group(Application FILES ${MAIN_SOURCE})
