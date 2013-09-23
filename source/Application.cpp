@@ -1,8 +1,7 @@
 #include "Application.hpp"
 #include <SFML/Window/Event.hpp>
 
-#include <SFML/Graphics/Text.hpp>
-#include <cstdio>
+#include <ctime>
 
 Application::Application()
 {
@@ -19,13 +18,33 @@ void Application::init(int /*argc*/, char** /*argv*/)
 
 void Application::run()
 {
-    mWindow.create(sf::VideoMode(800, 600), "TDDD23");
+    mLogger.log(Logger::Fatal, LOG_LINE("Starting application"));
 
-    sf::Font debugFont;
-    debugFont.loadFromFile("Dosis-Book.ttf");
-    sf::Text debug;
-    debug.setFont(debugFont);
-    debug.setCharacterSize(18);
+    mWindow.create(sf::VideoMode(800, 600), "TDDD23");
+    mUiView = mWindow.getDefaultView();
+
+    float aspect;
+    {
+        sf::Vector2f s = (sf::Vector2f)mWindow.getSize();
+        aspect = s.x / s.y;
+    }
+
+    mGameView = sf::View(sf::Vector2f(1000 * aspect, 1000), sf::Vector2f(0,0));
+
+    auto updateView = [&]() {
+        mUiView.setSize((sf::Vector2f)mWindow.getSize());
+        mUiView.setCenter((sf::Vector2f)mWindow.getSize() / 2.f);
+        mGameView.setSize(sf::Vector2f(1000 * aspect, 1000));
+
+#if 0
+        auto uiS = mUiView.getSize(), uiC = mUiView.getCenter();
+        auto gameS = mGameView.getSize(), gameC = mGameView.getCenter();
+
+        std::cout << "Updated views to:" << std::endl
+            << "UI - " << uiS.x << "x" << uiS.y << " at " << uiC.x << ", " << uiC.y << std::endl
+            << "Game - " << gameS.x << "x" << gameS.y << std::endl;
+#endif
+    };
 
     sf::Event ev;
     while (mWindow.isOpen())
@@ -39,6 +58,13 @@ void Application::run()
             case sf::Event::Closed:
                 mWindow.close();
                 break;
+            case sf::Event::Resized:
+                {
+                    sf::Vector2f s = (sf::Vector2f)mWindow.getSize();
+                    aspect = s.x / s.y;
+                }
+                updateView();
+                break;
             default:
                 break;
             }
@@ -46,20 +72,14 @@ void Application::run()
 
         mWindow.clear();
 
-        mWindow.draw(debug);
+        mWindow.setView(mGameView);
+
+        ///\TODO Draw game
+
+        mWindow.setView(mUiView);
 
         mWindow.display();
 
         mTelem.endFrame();
-
-        char tmp[256];
-        float f1, f5, f10;
-        f1 = mTelem.getFPS();
-        f5 = mTelem.getFPS(5);
-        f10 = mTelem.getFPS(10);
-
-        sprintf(tmp, "FPS 1/5/10:\n%.2f\n%.2f\n%.2f", f1, f5, f10);
-
-        debug.setString(tmp);
     }
 }

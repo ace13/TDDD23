@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Telemetry.hpp"
+#include "Logger.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Application
@@ -15,5 +16,8 @@ public:
 private:
     sf::RenderWindow mWindow;
 
+    sf::View mGameView, mUiView;
+
     Telemetry mTelem;
+    Logger mLogger;
 };
