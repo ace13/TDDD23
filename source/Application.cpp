@@ -3,7 +3,7 @@
 
 #include <ctime>
 
-Application::Application()
+Application::Application(): mStateMan(*this)
 {
 }
 
@@ -18,7 +18,7 @@ void Application::init(int /*argc*/, char** /*argv*/)
 
 void Application::run()
 {
-    mLogger.log(Logger::Fatal, LOG_LINE("Starting application"));
+    mLogger.log(Logger::Info, ("Starting application"));
 
     mWindow.create(sf::VideoMode(800, 600), "TDDD23");
     mUiView = mWindow.getDefaultView();
@@ -53,6 +53,8 @@ void Application::run()
 
         while (mWindow.pollEvent(ev))
         {
+            mStateMan.event(ev);
+
             switch(ev.type)
             {
             case sf::Event::Closed:
@@ -70,13 +72,19 @@ void Application::run()
             }
         }
 
+        mStateMan.update(1.f);
+
         mWindow.clear();
 
         mWindow.setView(mGameView);
 
+        mStateMan.draw(mWindow);
+
         ///\TODO Draw game
 
         mWindow.setView(mUiView);
+
+        mStateMan.drawUi(mWindow);
 
         mWindow.display();
 

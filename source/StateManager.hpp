@@ -5,10 +5,12 @@ namespace sf {
 	class RenderTarget;
 }
 
+class Application;
+
 class StateManager
 {
 public:
-	StateManager();
+	StateManager(Application&);
 	~StateManager();
 
 	void setState();
@@ -19,5 +21,5 @@ public:
 	void drawUi(sf::RenderTarget& target);
 
 private:
-
+	Application& mApp;
 };

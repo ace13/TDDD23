@@ -20,6 +20,8 @@ set(MAIN_SOURCE
     Logger.cpp
     ScriptManager.hpp
     ScriptManager.cpp
+    StateManager.hpp
+    StateManager.cpp
     Telemetry.hpp
     Telemetry.cpp
 )
