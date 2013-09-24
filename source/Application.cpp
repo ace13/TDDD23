@@ -46,10 +46,17 @@ void Application::run()
 #endif
     };
 
+    unsigned int tickrate = 66;
+    float msTick = 1.f / (float)tickrate;
+    float totTime = 0;
+    sf::Clock theTime;
+
     sf::Event ev;
     while (mWindow.isOpen())
     {
         mTelem.startFrame();
+
+        totTime += theTime.restart().asSeconds();
 
         while (mWindow.pollEvent(ev))
         {
@@ -72,7 +79,15 @@ void Application::run()
             }
         }
 
-        mStateMan.update(1.f);
+        while (totTime >= msTick)
+        {
+            mTelem.startUpdate();
+
+            mStateMan.update(msTick);
+            totTime -= msTick;
+
+            mTelem.endUpdate();
+        }
 
         mWindow.clear();
 

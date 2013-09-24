@@ -58,7 +58,7 @@ void StateManager::drawUi(sf::RenderTarget& target)
 	char tmp[256];
 
 	auto& ref = mApp.mTelem;
-	sprintf(tmp, "FPS (1,5,10):\n%f\n%f\n%f", ref.getFPS(), ref.getFPS(5), ref.getFPS(10));
+	sprintf(tmp, "FPS (1,5,10):\n%f\n%f\n%f\nUPS: %d", ref.getFPS(), ref.getFPS(5), ref.getFPS(10), ref.getUPS());
 
 	Debug.setString(tmp);
 	target.draw(Debug);

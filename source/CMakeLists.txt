@@ -18,6 +18,8 @@ set(MAIN_SOURCE
     Application.cpp
     Logger.hpp
     Logger.cpp
+    Options.hpp
+    Options.cpp
     ScriptManager.hpp
     ScriptManager.cpp
     StateManager.hpp

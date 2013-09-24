@@ -1,7 +1,8 @@
 #include "Telemetry.hpp"
 #include <cassert>
 
-Telemetry::Telemetry(): mMaxSamples(10), mSecond(0)
+Telemetry::Telemetry():
+    mMaxSamples(10), mCurrentFrames(0), mCurrentUpdates(0), mSecond(0), mUpdates(0)
 {
     mFrameTimes.resize(mMaxSamples, 0.f);
     mFrames.resize(mMaxSamples, 0);
@@ -32,10 +33,23 @@ void Telemetry::endFrame()
         while (mFrames.size() > mMaxSamples)
             mFrames.pop_front();
 
+        mUpdates = mCurrentUpdates;
+        mCurrentUpdates = 0;
         mCurrentFrames = 0;
         mSecond -= 1.f;
     }
 }
+
+void Telemetry::startUpdate()
+{
+    mCurrentUpdates++;
+}
+
+void Telemetry::endUpdate()
+{
+
+}
+
 
 void Telemetry::setMaxSamples(unsigned int samples)
 {
@@ -76,4 +90,9 @@ float Telemetry::getMS(unsigned int samples) const
     getTime(mFrameTimes, samples, ms);
 
     return ms*1000.f;
+}
+
+int Telemetry::getUPS() const
+{
+    return mUpdates;
 }
