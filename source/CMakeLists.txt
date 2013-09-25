@@ -16,6 +16,7 @@ set(GAME_SOURCE
 set(MAIN_SOURCE
     Application.hpp
     Application.cpp
+    IState.hpp
     Logger.hpp
     Logger.cpp
     Options.hpp

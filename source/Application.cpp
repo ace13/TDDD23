@@ -60,7 +60,8 @@ void Application::run()
 
         while (mWindow.pollEvent(ev))
         {
-            mStateMan.event(ev);
+            if (mStateMan.event(ev))
+                continue;
 
             switch(ev.type)
             {

@@ -1,5 +1,6 @@
 #include "StateManager.hpp"
 #include "Application.hpp"
+#include "IState.hpp"
 
 #ifndef NDEBUG
 #include <SFML/Graphics/Text.hpp>
@@ -32,28 +33,76 @@ StateManager::~StateManager()
 
 }
 
-void StateManager::setState()
+void StateManager::pushState(IState* state)
 {
+	auto it = mStates.end();
+	if ((it = std::find(mStates.begin(), mStates.end(), state)) == mStates.end())
+		return;
 
+	mStates.push_back(state);
+	mDrawQueue.push_back(state);
+}
+
+void StateManager::popState()
+{
+	IState* state = mDrawQueue.back();
+	mDrawQueue.pop_back();
+
+	state->setDestroyed();
+	mStateDirty = true;
 }
 
 bool StateManager::event(const sf::Event& ev)
 {
+	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+	{
+		bool s = (*it)->event(ev);
+		if (s)
+			return true;
+	}
 
+	return false;
 }
 
 void StateManager::update(float dt)
 {
+	if (mStateDirty)
+	{
+		mStateDirty = false;
+		for (auto it = mStates.begin(); it != mStates.end();)
+		{
+			if ((*it)->isDestroyed())
+			{
+				for (auto it2 = mDrawQueue.begin(); it2 != mDrawQueue.end(); ++it2)
+					if (*it2 == *it)
+					{
+						mDrawQueue.erase(it2);
+						break;
+					}
 
+				delete *it;
+				it = mStates.erase(it);
+			}
+			else
+				++it;
+		}
+	}
+
+	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+		(*it)->update(dt);
 }
 
 void StateManager::draw(sf::RenderTarget& target)
 {
-
+	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+		(*it)->draw(target);
 }
 
 void StateManager::drawUi(sf::RenderTarget& target)
 {
+	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+		(*it)->drawUi(target);
+
 #ifndef NDEBUG
 	char tmp[256];
 
