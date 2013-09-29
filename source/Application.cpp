@@ -16,6 +16,16 @@ void Application::init(int /*argc*/, char** /*argv*/)
 
 }
 
+const Telemetry& Application::getTelemetry() const
+{
+    return mTelem;
+}
+
+Logger& Application::getLogger()
+{
+    return mLogger;
+}
+
 void Application::run()
 {
     mLogger.log(Logger::Info, ("Starting application"));

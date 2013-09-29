@@ -14,7 +14,7 @@ public:
     void load();
     void unload();
 
-    inline bool event(const sf::Event& ev) { }
+    inline bool event(const sf::Event& ev) { return false; }
     void update(float dt);
     inline void draw(sf::RenderTarget& target) { }
     void drawUi(sf::RenderTarget& target);

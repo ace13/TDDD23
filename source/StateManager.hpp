@@ -28,6 +28,7 @@ private:
     friend class IState;
     Application& mApp;
 
+    bool mShowDebug;
     bool mStateDirty;
     std::list<IState*> mStates;
     std::list<IState*> mDrawQueue;

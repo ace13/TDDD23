@@ -1,12 +1,12 @@
 #pragma once
 
+#include "StateManager.hpp"
+
 namespace sf 
 {
     class Event;
     class RenderTarget;
 }
-
-class StateManager;
 
 class IState
 {
@@ -25,7 +25,8 @@ public:
 
 protected:
     inline void setDestroyed() { mDestroyed = true; }
-    inline StateManager* getManager() const { return mStateMan; }
+    inline StateManager& getManager() const { return *mStateMan; }
+    inline Application& getApplication() const { return mStateMan->mApp; }
 
 private:
     friend class StateManager;

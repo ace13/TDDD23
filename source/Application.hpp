@@ -14,6 +14,9 @@ public:
     void init(int argc, char** argv);
     void run();
 
+    const Telemetry& getTelemetry() const;
+    Logger& getLogger();
+
 private:
 	friend class StateManager;
 
