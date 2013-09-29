@@ -6,6 +6,13 @@ include_directories(
     ${Angelscript_INCLUDE_DIR}
 )
 
+set(DEBUG_SOURCE
+    Debug/Console.hpp
+    Debug/Console.cpp
+    Debug/TelemetryOverlay.hpp
+    Debug/TelemetryOverlay.cpp
+)
+
 set(GAME_SOURCE
     Game/Ship.hpp
     Game/Ship.cpp
@@ -30,8 +37,9 @@ set(MAIN_SOURCE
 )
 
 source_group(Application FILES ${MAIN_SOURCE})
+source_group(Debug FILES ${DEBUG_SOURCE})
 source_group(Game FILES ${GAME_SOURCE})
 
-add_executable(game main.cpp ${MAIN_SOURCE} ${GAME_SOURCE})
+add_executable(game main.cpp ${MAIN_SOURCE} ${DEBUG_SOURCE} ${GAME_SOURCE})
 
 target_link_libraries(game ${SFML_LIBRARIES} ${Angelscript_LIBRARIES})

@@ -60,7 +60,7 @@ void Application::run()
 
         while (mWindow.pollEvent(ev))
         {
-            if (mStateMan.event(ev))
+            if (mStateMan.doEvent(ev))
                 continue;
 
             switch(ev.type)
@@ -84,7 +84,7 @@ void Application::run()
         {
             mTelem.startUpdate();
 
-            mStateMan.update(msTick);
+            mStateMan.doUpdate(msTick);
             totTime -= msTick;
 
             mTelem.endUpdate();
@@ -94,13 +94,13 @@ void Application::run()
 
         mWindow.setView(mGameView);
 
-        mStateMan.draw(mWindow);
+        mStateMan.doDraw(mWindow);
 
         ///\TODO Draw game
 
         mWindow.setView(mUiView);
 
-        mStateMan.drawUi(mWindow);
+        mStateMan.doDrawUi(mWindow);
 
         mWindow.display();
 

@@ -3,8 +3,8 @@
 #include <list>
 
 namespace sf {
-	class Event;
-	class RenderTarget;
+    class Event;
+    class RenderTarget;
 }
 
 class Application;
@@ -13,21 +13,22 @@ class IState;
 class StateManager
 {
 public:
-	StateManager(Application&);
-	~StateManager();
+    StateManager(Application&);
+    ~StateManager();
 
-	void pushState(IState* s);
-	void popState();
+    void pushState(IState* s);
+    void popState();
 
-	bool event(const sf::Event& ev);
-	void update(float dt);
-	void draw(sf::RenderTarget& target);
-	void drawUi(sf::RenderTarget& target);
+    bool doEvent(const sf::Event& ev);
+    void doUpdate(float dt);
+    void doDraw(sf::RenderTarget& target);
+    void doDrawUi(sf::RenderTarget& target);
 
 private:
-	Application& mApp;
+    friend class IState;
+    Application& mApp;
 
-	bool mStateDirty;
-	std::list<IState*> mStates;
-	std::list<IState*> mDrawQueue;
+    bool mStateDirty;
+    std::list<IState*> mStates;
+    std::list<IState*> mDrawQueue;
 };

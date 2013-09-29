@@ -7,9 +7,9 @@
 
 namespace
 {
-	sf::Text Debug;
-	sf::Font DebugFont;
-	bool DebugLoaded = false;
+    sf::Text Debug;
+    sf::Font DebugFont;
+    bool DebugLoaded = false;
 }
 #endif
 
@@ -17,13 +17,13 @@ namespace
 StateManager::StateManager(Application& app): mApp(app)
 {
 #ifndef NDEBUG
-	if (!DebugLoaded)
-	{
-		DebugFont.loadFromFile("Dosis-Book.ttf");
-		Debug.setFont(DebugFont);
-		Debug.setCharacterSize(12);
-		DebugLoaded = true;
-	}
+    if (!DebugLoaded)
+    {
+        DebugFont.loadFromFile("Dosis-Book.ttf");
+        Debug.setFont(DebugFont);
+        Debug.setCharacterSize(12);
+        DebugLoaded = true;
+    }
 #endif
 
 }
@@ -35,81 +35,82 @@ StateManager::~StateManager()
 
 void StateManager::pushState(IState* state)
 {
-	auto it = mStates.end();
-	if ((it = std::find(mStates.begin(), mStates.end(), state)) == mStates.end())
-		return;
+    auto it = mStates.end();
+    if ((it = std::find(mStates.begin(), mStates.end(), state)) == mStates.end())
+        return;
 
-	mStates.push_back(state);
-	mDrawQueue.push_back(state);
+    mStates.push_back(state);
+    mDrawQueue.push_back(state);
+    state->mStateMan = this;
 }
 
 void StateManager::popState()
 {
-	IState* state = mDrawQueue.back();
-	mDrawQueue.pop_back();
+    IState* state = mDrawQueue.back();
+    mDrawQueue.pop_back();
 
-	state->setDestroyed();
-	mStateDirty = true;
+    state->setDestroyed();
+    mStateDirty = true;
 }
 
-bool StateManager::event(const sf::Event& ev)
+bool StateManager::doEvent(const sf::Event& ev)
 {
-	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-	{
-		bool s = (*it)->event(ev);
-		if (s)
-			return true;
-	}
+    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+    {
+        bool s = (*it)->event(ev);
+        if (s)
+            return true;
+    }
 
-	return false;
+    return false;
 }
 
-void StateManager::update(float dt)
+void StateManager::doUpdate(float dt)
 {
-	if (mStateDirty)
-	{
-		mStateDirty = false;
-		for (auto it = mStates.begin(); it != mStates.end();)
-		{
-			if ((*it)->isDestroyed())
-			{
-				for (auto it2 = mDrawQueue.begin(); it2 != mDrawQueue.end(); ++it2)
-					if (*it2 == *it)
-					{
-						mDrawQueue.erase(it2);
-						break;
-					}
+    if (mStateDirty)
+    {
+        mStateDirty = false;
+        for (auto it = mStates.begin(); it != mStates.end();)
+        {
+            if ((*it)->isDestroyed())
+            {
+                for (auto it2 = mDrawQueue.begin(); it2 != mDrawQueue.end(); ++it2)
+                    if (*it2 == *it)
+                    {
+                        mDrawQueue.erase(it2);
+                        break;
+                    }
 
-				delete *it;
-				it = mStates.erase(it);
-			}
-			else
-				++it;
-		}
-	}
+                delete *it;
+                it = mStates.erase(it);
+            }
+            else
+                ++it;
+        }
+    }
 
-	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-		(*it)->update(dt);
+    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+        (*it)->update(dt);
 }
 
-void StateManager::draw(sf::RenderTarget& target)
+void StateManager::doDraw(sf::RenderTarget& target)
 {
-	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-		(*it)->draw(target);
+    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+        (*it)->draw(target);
 }
 
-void StateManager::drawUi(sf::RenderTarget& target)
+void StateManager::doDrawUi(sf::RenderTarget& target)
 {
-	for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-		(*it)->drawUi(target);
+    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+        (*it)->drawUi(target);
 
 #ifndef NDEBUG
-	char tmp[256];
+    char tmp[256];
 
-	auto& ref = mApp.mTelem;
-	sprintf(tmp, "FPS (1,5,10):\n%f\n%f\n%f\nUPS: %d", ref.getFPS(), ref.getFPS(5), ref.getFPS(10), ref.getUPS());
+    auto& ref = mApp.mTelem;
+    sprintf(tmp, "FPS (1,5,10):\n%f\n%f\n%f\nUPS: %d", ref.getFPS(), ref.getFPS(5), ref.getFPS(10), ref.getUPS());
 
-	Debug.setString(tmp);
-	target.draw(Debug);
+    Debug.setString(tmp);
+    target.draw(Debug);
 #endif
 }
