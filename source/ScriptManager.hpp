@@ -6,7 +6,7 @@
 class asIScriptContext;
 class asIScriptEngine;
 
-#define asAssert(r) assert((r) > 0)
+#define asAssert(r) assert((r) >= 0)
 
 /** A basic manager to keep track of scripts
  */
@@ -20,6 +20,8 @@ public:
 
     asIScriptContext* getContext();
     void returnContext(asIScriptContext* ctx);
+
+    void runString(const std::string& code);
 
 private:
     /// Called by the script engine when a context fails execution.

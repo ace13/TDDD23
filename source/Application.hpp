@@ -1,8 +1,9 @@
 #pragma once
 
+#include "Logger.hpp"
+#include "ScriptManager.hpp"
 #include "StateManager.hpp"
 #include "Telemetry.hpp"
-#include "Logger.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Application
@@ -24,6 +25,7 @@ private:
 
     sf::View mGameView, mUiView;
 
+    ScriptManager mScriptMan;
     StateManager mStateMan;
     Telemetry mTelem;
     Logger mLogger;

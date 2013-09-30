@@ -13,7 +13,9 @@ Application::~Application()
 
 void Application::init(int /*argc*/, char** /*argv*/)
 {
+    mScriptMan.init();
 
+    mScriptMan.runString("print(\"Script system fully initialized.\")");
 }
 
 const Telemetry& Application::getTelemetry() const

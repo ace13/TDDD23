@@ -1,9 +1,10 @@
 find_package(SFML 2 REQUIRED COMPONENTS graphics window system)
-find_package(Angelscript REQUIRED)
+find_package(Angelscript REQUIRED COMPONENTS contextmgr debugger scriptany scriptarray scriptbuilder scriptdictionary scripthelper scriptmath scriptstdstring serializer)
 
 include_directories(
     ${SFML_INCLUDE_DIR}
     ${Angelscript_INCLUDE_DIR}
+    ${Angelscript_ADDON_DIR}
 )
 
 set(DEBUG_SOURCE
@@ -36,10 +37,11 @@ set(MAIN_SOURCE
     Telemetry.cpp
 )
 
+source_group(Script FILES ${Angelscript_HEADER} ${Angelscript_SOURCE})
 source_group(Application FILES ${MAIN_SOURCE})
 source_group(Debug FILES ${DEBUG_SOURCE})
 source_group(Game FILES ${GAME_SOURCE})
 
-add_executable(game main.cpp ${MAIN_SOURCE} ${DEBUG_SOURCE} ${GAME_SOURCE})
+add_executable(game main.cpp ${MAIN_SOURCE} ${DEBUG_SOURCE} ${GAME_SOURCE} ${Angelscript_HEADER} ${Angelscript_SOURCE})
 
 target_link_libraries(game ${SFML_LIBRARIES} ${Angelscript_LIBRARIES})
