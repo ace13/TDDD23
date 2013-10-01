@@ -82,8 +82,11 @@ asIScriptContext* ScriptManager::getContext()
 
 void ScriptManager::returnContext(asIScriptContext* ctx)
 {
-    int r = ctx->Unprepare(); asAssert(r);
-    mContexts.push_back(ctx);
+    int r = ctx->Unprepare();
+    if (r < 0) // If it fails to be unprepared, then let it go.
+        ctx->Release();
+    else
+        mContexts.push_back(ctx);
 }
 
 void ScriptManager::runString(const std::string& str)
