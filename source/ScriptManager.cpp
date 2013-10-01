@@ -1,4 +1,5 @@
 #include "ScriptManager.hpp"
+#include "Application.hpp"
 #include <angelscript.h>
 #include <iostream>
 
@@ -20,7 +21,7 @@ namespace
     void print(void) { std::cout << std::endl; }
 };
 
-ScriptManager::ScriptManager()
+ScriptManager::ScriptManager(Application& app) : mApp(app)
 {
 
 }
@@ -33,7 +34,9 @@ ScriptManager::~ScriptManager()
 void ScriptManager::init()
 {
     mEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
+    mEngine->SetMessageCallback(asMETHOD(ScriptManager, messageCallback), this, asCALL_THISCALL);
 
+    // Base types
     RegisterScriptAny(mEngine);
     RegisterScriptArray(mEngine, true);
     RegisterScriptMath(mEngine);
@@ -42,6 +45,7 @@ void ScriptManager::init()
     RegisterScriptDictionary(mEngine);
     RegisterStdStringUtils(mEngine);
 
+    // Global functions
     int r = 0;
     r = mEngine->RegisterGlobalFunction("void print()", asFUNCTIONPR(print, (), void), asCALL_CDECL); asAssert(r);
     r = mEngine->RegisterGlobalFunction("void print(int &in)", asFUNCTIONPR(print, (const int&), void), asCALL_CDECL); asAssert(r);
@@ -49,12 +53,13 @@ void ScriptManager::init()
     r = mEngine->RegisterGlobalFunction("void print(double &in)", asFUNCTIONPR(print, (const double&), void), asCALL_CDECL); asAssert(r);
     r = mEngine->RegisterGlobalFunction("void print(string &in)", asFUNCTIONPR(print, (const std::string&), void), asCALL_CDECL); asAssert(r);
 
+    // Debug things
     CScriptBuilder build;
-    build.StartNewModule(mEngine, "DebugModule");
-    build.AddSectionFromMemory("void _grab() { print(\"=>\"); } \
+    r = build.StartNewModule(mEngine, "DebugModule"); asAssert(r);
+    r = build.AddSectionFromMemory("void _grab() { } \
         void _grab(int i) { print(\"=> \" + i); } void _grab(float f) { print(\"=> \" + f); } \
-        void _grab(double d) { print(\"=> \" + d); } void _grab(string s) { print(\"=> \" + s); }", "_grab");
-    build.BuildModule();
+        void _grab(double d) { print(\"=> \" + d); } void _grab(string s) { print(\"=> \" + s); }", "_grab"); asAssert(r);
+    r = build.BuildModule(); asAssert(r);
 }
 
 asIScriptContext* ScriptManager::getContext()
@@ -78,13 +83,14 @@ asIScriptContext* ScriptManager::getContext()
 void ScriptManager::returnContext(asIScriptContext* ctx)
 {
     int r = ctx->Unprepare(); asAssert(r);
+    mContexts.push_back(ctx);
 }
 
 void ScriptManager::runString(const std::string& str)
 {
     auto ctx = getContext();
 
-    std::cout << "Script> " << str << std::endl;
+    mApp.getLogger().log("Executing '%s'", Logger::Info, str.c_str());
 
     std::string cleaned = str;
 
@@ -93,7 +99,9 @@ void ScriptManager::runString(const std::string& str)
 
     cleaned = "_grab(" + cleaned + ");";
 
-    ExecuteString(mEngine, cleaned.c_str(), mEngine->GetModule("DebugModule"), ctx);
+    int r = ExecuteString(mEngine, cleaned.c_str(), mEngine->GetModule("DebugModule"), ctx);
+    if (r < 0)
+        mApp.getLogger().log("Failed to execute string, check your syntax.", Logger::Info);
 
     returnContext(ctx);
 }
@@ -103,4 +111,16 @@ void ScriptManager::exceptionCallback(asIScriptContext* ctx)
     std::cerr << "Ran into an exception while executing Angelscript!" << std::endl;
 
     PrintException(ctx, true);
+}
+
+void ScriptManager::messageCallback(const asSMessageInfo *msg)
+{
+     Logger::Level lvl = Logger::Error;
+
+     if (msg->type == asEMsgType::asMSGTYPE_WARNING)
+         lvl = Logger::Warning;
+     else if (msg->type == asEMsgType::asMSGTYPE_INFORMATION)
+         lvl = Logger::Info;
+
+     mApp.getLogger().log("%s:%d:%d: %s", lvl, msg->section, msg->row, msg->col, msg->message);
 }

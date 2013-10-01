@@ -6,6 +6,8 @@
 
 class asIScriptContext;
 class asIScriptEngine;
+class asSMessageInfo;
+class Application;
 
 #define asAssert(r) assert((r) >= 0)
 
@@ -14,7 +16,7 @@ class asIScriptEngine;
 class ScriptManager
 {
 public:
-    ScriptManager();
+    ScriptManager(Application&);
     ~ScriptManager();
 
     void init();
@@ -27,7 +29,9 @@ public:
 private:
     /// Called by the script engine when a context fails execution.
     void exceptionCallback(asIScriptContext*);
+    void messageCallback(const asSMessageInfo *msg);
 
+    Application& mApp;
     asIScriptEngine* mEngine;
     std::vector<asIScriptContext*> mContexts;
 };

@@ -3,7 +3,7 @@
 
 #include <ctime>
 
-Application::Application(): mStateMan(*this)
+Application::Application(): mStateMan(*this), mScriptMan(*this)
 {
 }
 
@@ -14,8 +14,6 @@ Application::~Application()
 void Application::init(int /*argc*/, char** /*argv*/)
 {
     mScriptMan.init();
-
-    mScriptMan.runString("print(\"Script system fully initialized.\")");
 }
 
 const Telemetry& Application::getTelemetry() const
@@ -30,7 +28,7 @@ Logger& Application::getLogger()
 
 void Application::run()
 {
-    mLogger.log(Logger::Info, ("Starting application"));
+    mLogger.log("Starting application", Logger::Info);
 
     mWindow.create(sf::VideoMode(800, 600), "TDDD23");
     mUiView = mWindow.getDefaultView();
@@ -48,14 +46,10 @@ void Application::run()
         mUiView.setCenter((sf::Vector2f)mWindow.getSize() / 2.f);
         mGameView.setSize(sf::Vector2f(1000 * aspect, 1000));
 
-#if 0
         auto uiS = mUiView.getSize(), uiC = mUiView.getCenter();
         auto gameS = mGameView.getSize(), gameC = mGameView.getCenter();
 
-        std::cout << "Updated views to:" << std::endl
-            << "UI - " << uiS.x << "x" << uiS.y << " at " << uiC.x << ", " << uiC.y << std::endl
-            << "Game - " << gameS.x << "x" << gameS.y << std::endl;
-#endif
+        mLogger.log("Window resized, view sizes:\n\tUI: %.2fx%.2f\n\tGame: %.2fx%.2f", Logger::Info, uiS.x, uiS.y, gameS.x, gameS.y);
     };
 
     unsigned int tickrate = 66;
@@ -92,6 +86,10 @@ void Application::run()
             }
         }
 
+        // Sanity check, if more than five updates are missed, then don't try to do them all.
+        if (totTime > msTick * 5)
+            totTime = msTick * 5;
+
         while (totTime >= msTick)
         {
             mTelem.startUpdate();
@@ -108,8 +106,6 @@ void Application::run()
 
         mStateMan.doDraw(mWindow);
 
-        ///\TODO Draw game
-
         mWindow.setView(mUiView);
 
         mStateMan.doDrawUi(mWindow);
@@ -118,4 +114,6 @@ void Application::run()
 
         mTelem.endFrame();
     }
+
+    mLogger.log("Shutting down application", Logger::Info);
 }

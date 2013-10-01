@@ -18,17 +18,25 @@ public:
 		Fatal
 	};
 
+    struct Message
+    {
+        Level level;
+        std::string message;
+
+        bool positional;
+        std::string file;
+        unsigned int line;
+    };
+
 	Logger();
-	Logger(const Logger& other);
 	~Logger();
 
-	Logger& operator=(const Logger& other);
+	void setLogger(Level l, const std::function<void(const Message&)>&);
+    void clearLogger(Level l);
 
-	void setLogger(Level l, const std::function<void(const std::string&)>&);
-
-	void log(Level l, const std::string& message, ...) const;
-	void log(Level l, const std::string& file, unsigned int line, const std::string& message, ...) const;
+	void log(const std::string& message, Level l, ...) const;
+	void log(const std::string& file, unsigned int line, const std::string& message, Level l, ...) const;
 
 private:
-	std::unordered_map<Level, std::function<void(const std::string&)>, std::hash<int> > mLoggers;
+	std::unordered_map<Level, std::function<void(const Message&)>, std::hash<int> > mLoggers;
 };
