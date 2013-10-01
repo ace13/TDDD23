@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cassert>
+#include <string>
 
 class asIScriptContext;
 class asIScriptEngine;
