@@ -21,8 +21,14 @@ Options::Options(Application& app) : mApp(app)
 
 		std::cout << "Usage: " << mApp.getApplicationName() << " [OPTION]..." << std::endl
 			<< "Options:" << std::endl;
-		for (auto& i : mStored)
-		{
+#ifdef _WIN32
+        for (auto it = mStored.begin(); it != mStored.end(); ++it)
+        {
+            auto i = *it;
+#else
+        for (auto& i : mStored)
+        {
+#endif
 			std::cout << "  --" << std::setw(4) << std::left << i.first << "  \t" << i.second.Description << " (" << getName(i.second.Type) << ")" << std::endl;
 		}
 
@@ -32,8 +38,14 @@ Options::Options(Application& app) : mApp(app)
 
 Options::~Options()
 {
-	for (auto& i : mStored)
-	{
+#ifdef _WIN32
+    for (auto it = mStored.begin(); it != mStored.end(); ++it)
+    {
+        auto i = *it;
+#else
+    for (auto& i : mStored)
+    {
+#endif
 		CVAR& cv = i.second;
 		
 		if (cv.Type == typeid(bool))
@@ -83,18 +95,17 @@ void Options::parseARGV(int argc, char** argv)
 	auto handle = [&](CVAR& cv)
 	{
 		typedef std::pair<std::type_index, std::function<bool(const char*)> > kv;
-		std::unordered_map<std::type_index, std::function<bool(const char*)> > isType {
-			kv { typeid(int), [](const char* str) -> bool { int i; return sscanf(str, "%8i", &i) == 1; } },
-			kv { typeid(bool), [](const char* str) -> bool {
-				int i;
-				if (sscanf(str, "%1i", &i) == 1) return true;
-				else if (strcmp(str, "false") == 0) return true;
-				else if (strcmp(str, "true") == 0) return true;
-				return false;
-			} },
-			kv { typeid(float), [](const char* str) -> bool { float f; return sscanf(str, "%8f", &f) == 1; } },
-			kv { typeid(std::string), [](const char*) -> bool { return true; } }
+		std::unordered_map<std::type_index, std::function<bool(const char*)> > isType;
+		isType[typeid(int)] = [](const char* str) -> bool { int i; return sscanf(str, "%8i", &i) == 1; };
+		isType[typeid(bool)] = [](const char* str) -> bool {
+			int i;
+			if (sscanf(str, "%1i", &i) == 1) return true;
+			else if (strcmp(str, "false") == 0) return true;
+			else if (strcmp(str, "true") == 0) return true;
+			return false;
 		};
+		isType[typeid(float)] = [](const char* str) -> bool { float f; return sscanf(str, "%8f", &f) == 1; };
+		isType[typeid(std::string)] = [](const char*) -> bool { return true; };
 
 		if (argv[i + 1] == nullptr)
 		{
@@ -152,8 +163,14 @@ void Options::parseARGV(int argc, char** argv)
 					continue;
 				}
 
-				for (auto& j : mStored)
-				{
+#ifdef _WIN32
+                for (auto it = mStored.begin(); it != mStored.end(); ++it)
+                {
+                    auto j = *it;
+#else
+                for (auto& j : mStored)
+                {
+#endif
 					if (j.first == str)
 					{
 						handle(j.second);
@@ -167,8 +184,14 @@ void Options::parseARGV(int argc, char** argv)
 				{
 					char c = str[j];
 
-					for (auto& k : mStored)
-					{
+#ifdef _WIN32
+                    for (auto it = mStored.begin(); it != mStored.end(); ++it)
+                    {
+                        auto k = *it;
+#else
+                    for (auto& k : mStored)
+                    {
+#endif
 						if (k.second.Name[0] == c)
 						{
 							handle(k.second);

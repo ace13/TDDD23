@@ -78,8 +78,8 @@ void Options::registerVariable(T& t, const std::string& name, const std::string&
     cv.Description = desc;
     cv.Type = typeid(T);
     
-    cv.Set = new std::function<void(const T& val)> { [t](const T& val) { t = val; } };
-    cv.Get = new std::function<T()> { [t]() { return t; } };
+    cv.Set = new std::function<void(const T& val)>([t](const T& val) { t = val; });
+    cv.Get = new std::function<T()>([t]() { return t; });
 
     registerCVAR(cv);
 }
@@ -110,8 +110,8 @@ void Options::addVariable(const std::string& name, const T& def, const std::stri
     T* var = new T(def);
     cv.Opaque = var;
     
-    cv.Set = new std::function<void(const T& val)> { [var](const T& val) { *var = val; } };
-    cv.Get = new std::function<T()> { [var]() { return *var; } };
+    cv.Set = new std::function<void(const T& val)>([var](const T& val) { *var = val; });
+    cv.Get = new std::function<T()>([var]() { return *var; });
 
     registerCVAR(cv);
 }
