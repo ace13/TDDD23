@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Logger.hpp"
+#include "Options.hpp"
 #include "ScriptManager.hpp"
 #include "StateManager.hpp"
 #include "Telemetry.hpp"
@@ -28,5 +29,6 @@ private:
     ScriptManager mScriptMan;
     StateManager mStateMan;
     Telemetry mTelem;
+    Options mOptions;
     Logger mLogger;
 };

@@ -54,12 +54,12 @@ void ScriptManager::init()
     r = mEngine->RegisterGlobalFunction("void print(string &in)", asFUNCTIONPR(print, (const std::string&), void), asCALL_CDECL); asAssert(r);
 
     // Debug things
-    CScriptBuilder build;
+    /*CScriptBuilder build;
     r = build.StartNewModule(mEngine, "DebugModule"); asAssert(r);
     r = build.AddSectionFromMemory("void _grab() { } \
         void _grab(int i) { print(\"=> \" + i); } void _grab(float f) { print(\"=> \" + f); } \
         void _grab(double d) { print(\"=> \" + d); } void _grab(string s) { print(\"=> \" + s); }", "_grab"); asAssert(r);
-    r = build.BuildModule(); asAssert(r);
+    r = build.BuildModule(); asAssert(r);*/
 }
 
 asIScriptContext* ScriptManager::getContext()

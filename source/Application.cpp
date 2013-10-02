@@ -3,7 +3,7 @@
 
 #include <ctime>
 
-Application::Application(): mStateMan(*this), mScriptMan(*this)
+Application::Application(): mStateMan(*this), mScriptMan(*this), mOptions(*this)
 {
 }
 
@@ -11,8 +11,13 @@ Application::~Application()
 {
 }
 
-void Application::init(int /*argc*/, char** /*argv*/)
+void Application::init(int argc, char** argv)
 {
+    // Add options
+    mOptions.addVariable<int>("width", 800);
+    mOptions.addVariable<int>("height", 600);
+
+    mOptions.parseARGV(argc, argv);
     mScriptMan.init();
 }
 
@@ -30,7 +35,7 @@ void Application::run()
 {
     mLogger.log("Starting application", Logger::Info);
 
-    mWindow.create(sf::VideoMode(800, 600), "TDDD23");
+    mWindow.create(sf::VideoMode(mOptions.get<int>("width"), mOptions.get<int>("height")), "TDDD23");
     mUiView = mWindow.getDefaultView();
 
     float aspect;
