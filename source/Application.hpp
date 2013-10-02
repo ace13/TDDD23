@@ -18,12 +18,14 @@ public:
 
     const Telemetry& getTelemetry() const;
     Logger& getLogger();
+    std::string getApplicationName() const;
 
 private:
 	friend class StateManager;
 
-    sf::RenderWindow mWindow;
+    std::string mAppName;
 
+    sf::RenderWindow mWindow;
     sf::View mGameView, mUiView;
 
     ScriptManager mScriptMan;

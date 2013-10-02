@@ -21,7 +21,7 @@ namespace
     void print(void) { std::cout << std::endl; }
 };
 
-ScriptManager::ScriptManager(Application& app) : mApp(app)
+ScriptManager::ScriptManager(Application& app) : mApp(app), mEngine(nullptr)
 {
 
 }

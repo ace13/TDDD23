@@ -13,13 +13,14 @@ struct CVAR
 
     enum Flags
     {
-        Invalid,
+        Default,
         Internal = 1 << 0,
         Max      = 1 << 0
     };
 
     int Flags;
     std::string Name;
+    std::string Description;
     std::type_index Type;
 
     // Don't touch these
@@ -48,11 +49,11 @@ public:
     void loadConfig(const std::string& file);
 
     template<typename T>
-    void registerVariable(T& t, const std::string& name, int flags = CVAR::Invalid);
+    void registerVariable(T& t, const std::string& name, const std::string& desc = "", int flags = CVAR::Default);
     template<typename T>
-    void registerProperty(const std::function<void(const T&)>& set, const std::function<T(void)>& get, const std::string& name, int flags = CVAR::Invalid);
+    void registerProperty(const std::function<void(const T&)>& set, const std::function<T(void)>& get, const std::string& name, const std::string& desc = "", int flags = CVAR::Default);
     template<typename T>
-    void addVariable(const std::string& name, const T& def, int flags = CVAR::Invalid);
+    void addVariable(const std::string& name, const T& def, const std::string& desc = "", int flags = CVAR::Default);
     void registerCVAR(const CVAR& t);
 
     const CVAR& getCVAR(const std::string& name) const;
@@ -69,11 +70,12 @@ private:
 };
 
 template<typename T>
-void Options::registerVariable(T& t, const std::string& name, int flags)
+void Options::registerVariable(T& t, const std::string& name, const std::string& desc, int flags)
 {
     CVAR cv;
     cv.Flags = flags;
     cv.Name = name;
+    cv.Description = desc;
     cv.Type = typeid(T);
     
     cv.Set = new std::function<void(const T& val)> { [t](const T& val) { t = val; } };
@@ -83,11 +85,12 @@ void Options::registerVariable(T& t, const std::string& name, int flags)
 }
 
 template<typename T>
-void Options::registerProperty(const std::function<void(const T&)>& set, const std::function<T(void)>& get, const std::string& name, int flags)
+void Options::registerProperty(const std::function<void(const T&)>& set, const std::function<T(void)>& get, const std::string& name, const std::string& desc, int flags)
 {
     CVAR cv;
     cv.Flags = flags;
     cv.Name = name;
+    cv.Description = desc;
     cv.Type = typeid(T);
     
     cv.Set = new std::function<void(const T& val)>(set);
@@ -97,11 +100,12 @@ void Options::registerProperty(const std::function<void(const T&)>& set, const s
 }
 
 template<typename T>
-void Options::addVariable(const std::string& name, const T& def, int flags)
+void Options::addVariable(const std::string& name, const T& def, const std::string& desc, int flags)
 {
     CVAR cv;
     cv.Flags = flags | CVAR::Internal;
     cv.Name = name;
+    cv.Description = desc;
     cv.Type = typeid(T);
     T* var = new T(def);
     cv.Opaque = var;

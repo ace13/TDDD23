@@ -13,9 +13,11 @@ Application::~Application()
 
 void Application::init(int argc, char** argv)
 {
+    mAppName = argv[0];
+
     // Add options
-    mOptions.addVariable<int>("width", 800);
-    mOptions.addVariable<int>("height", 600);
+    mOptions.addVariable<std::string>("resolution", "800x600", "The resolution of the window");
+    mOptions.addVariable<bool>("fullscreen", false, "Run in a fullscreen window");
 
     mOptions.parseARGV(argc, argv);
     mScriptMan.init();
@@ -31,11 +33,28 @@ Logger& Application::getLogger()
     return mLogger;
 }
 
+std::string Application::getApplicationName() const
+{
+    return mAppName;
+}
+
 void Application::run()
 {
     mLogger.log("Starting application", Logger::Info);
 
-    mWindow.create(sf::VideoMode(mOptions.get<int>("width"), mOptions.get<int>("height")), "TDDD23");
+    {
+        std::string res = mOptions.get<std::string>("resolution");
+        unsigned int w = 800, h = 600;
+        int r = sscanf(res.c_str(), "%4ux%4u", &w, &h);
+        if (r != 2)
+        {
+            mLogger.log("Invalid resolution string '%s' specified, defaulting to %ux%u", Logger::Warning, w, h);
+            w = 800; h = 600;
+        }
+
+        mWindow.create(sf::VideoMode(w, h), "TDDD23", (mOptions.get<bool>("fullscreen") ? sf::Style::Fullscreen : sf::Style::Default));
+    }
+
     mUiView = mWindow.getDefaultView();
 
     float aspect;
@@ -82,7 +101,6 @@ void Application::run()
             case sf::Event::Resized:
                 {
                     sf::Vector2f s = (sf::Vector2f)mWindow.getSize();
-                    aspect = s.x / s.y;
                 }
                 updateView();
                 break;
