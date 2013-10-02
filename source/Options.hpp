@@ -78,8 +78,8 @@ void Options::registerVariable(T& t, const std::string& name, const std::string&
     cv.Description = desc;
     cv.Type = typeid(T);
     
-    cv.Set = new std::function<void(const T& val)>([t](const T& val) { t = val; });
-    cv.Get = new std::function<T()>([t]() { return t; });
+    cv.Set = new std::function<void(const T& val)>([&](const T& val) { t = val; });
+    cv.Get = new std::function<T()>([&]() { return t; });
 
     registerCVAR(cv);
 }

@@ -29,7 +29,7 @@ Options::Options(Application& app) : mApp(app)
         for (auto& i : mStored)
         {
 #endif
-			std::cout << "  --" << std::setw(4) << std::left << i.first << "  \t" << i.second.Description << " (" << getName(i.second.Type) << ")" << std::endl;
+			std::cout << "  --" << std::setw(16) << std::left << i.first << "  \t" << i.second.Description << " (" << getName(i.second.Type) << ")" << std::endl;
 		}
 
 		exit(0);

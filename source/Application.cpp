@@ -40,7 +40,7 @@ std::string Application::getApplicationName() const
 
 void Application::run()
 {
-    mLogger.log("Starting application", Logger::Info);
+    mLogger.log("Starting application %s", Logger::Info, mAppName.c_str());
 
     {
         std::string res = mOptions.get<std::string>("resolution");
