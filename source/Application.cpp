@@ -5,6 +5,7 @@
 
 Application::Application(): mStateMan(*this), mScriptMan(*this), mOptions(*this)
 {
+    /// \TODO Redirect sf::err to Logger
 }
 
 Application::~Application()
@@ -18,6 +19,7 @@ void Application::init(int argc, char** argv)
     // Add options
     mOptions.addVariable<std::string>("resolution", "800x600", "The resolution of the window");
     mOptions.addVariable<bool>("fullscreen", false, "Run in a fullscreen window");
+    mOptions.addVariable<bool>("verbose", false, "")
 
     mOptions.parseARGV(argc, argv);
     mScriptMan.init();

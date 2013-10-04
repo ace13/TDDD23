@@ -15,6 +15,8 @@ set(DEBUG_SOURCE
 )
 
 set(GAME_SOURCE
+    Game/Planet.hpp
+    Game/Planet.cpp
     Game/Ship.hpp
     Game/Ship.cpp
     Game/Weapon.hpp
@@ -27,6 +29,8 @@ set(MAIN_SOURCE
     IState.hpp
     Logger.hpp
     Logger.cpp
+    Music.hpp
+    Music.cpp
     Options.hpp
     Options.cpp
     ScriptManager.hpp
