@@ -20,6 +20,7 @@ void Application::init(int argc, char** argv)
     mOptions.addVariable<std::string>("resolution", "800x600", "The resolution of the window");
     mOptions.addVariable<bool>("fullscreen", false, "Run in a fullscreen window");
     mOptions.addVariable<bool>("verbose", false, "");
+    mOptions.addVariable<int>("tickrate", 66, "Update ticks per second");
 
     mOptions.parseARGV(argc, argv);
     mScriptMan.init();
@@ -78,8 +79,7 @@ void Application::run()
         mLogger.log("Window resized, view sizes:\n\tUI: %.2fx%.2f\n\tGame: %.2fx%.2f", Logger::Info, uiS.x, uiS.y, gameS.x, gameS.y);
     };
 
-    unsigned int tickrate = 66;
-    float msTick = 1.f / (float)tickrate;
+    float msTick = 1.f / (float)mOptions.get<int>("tickrate");
     float totTime = 0;
     sf::Clock theTime;
 

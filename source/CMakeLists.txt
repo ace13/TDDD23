@@ -17,6 +17,9 @@ set(DEBUG_SOURCE
 )
 
 set(GAME_SOURCE
+    Game/GameState.hpp
+    Game/GameState.cpp
+
     Game/Planet.hpp
     Game/Planet.cpp
     Game/Ship.hpp
