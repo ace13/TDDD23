@@ -18,5 +18,5 @@ public:
     void drawUi(sf::RenderTarget& target);
 
 private:
-	World mWorld;
+	Game::World mWorld;
 };

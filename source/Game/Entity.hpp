@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/System/Vector.hpp>
+#include <SFML/System/Vector2.hpp>
 
 namespace sf { class RenderTarget; }
 

@@ -20,7 +20,7 @@ void GameState::unload()
 
 bool GameState::event(const sf::Event& ev)
 {
-
+	return false;
 }
 void GameState::update(float dt)
 {
@@ -28,7 +28,7 @@ void GameState::update(float dt)
 }
 void GameState::draw(sf::RenderTarget& target)
 {
-	
+
 }
 void GameState::drawUi(sf::RenderTarget& target)
 {

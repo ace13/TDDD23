@@ -1,33 +1,34 @@
 #include "World.hpp"
+#include <Box2D/Box2D.h>
 
 using namespace Game;
 
-World::World() : mWorld(nullptr)
+World::World() : mBox2DWorld(nullptr)
 {
 
 }
 
 World::~World()
 {
-	if (mWorld)
-		delete mWorld;
+	if (mBox2DWorld)
+		delete mBox2DWorld;
 }
 
 void World::init()
 {
-	if (mWorld)
+	if (mBox2DWorld)
 		return;
 
-	mWorld = new b2World();
+	mBox2DWorld = new b2World(b2Vec2(0,0));
 }
 
 void World::update(float dt)
 {
-	if (!mWorld)
+	if (!mBox2DWorld)
 		return;
 
 	static int velocitySteps = 8;
 	static int positionSteps = 4;
 
-	mWorld->step(dt, velocitySteps, positionSteps); ///\TODO Maybe check if this needs to be more or less static anywho
+	mBox2DWorld->Step(dt, velocitySteps, positionSteps); ///\TODO Maybe check if this needs to be more or less static anywho
 }

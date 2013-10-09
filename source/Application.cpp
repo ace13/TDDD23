@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include "Game/GameState.hpp"
 #include <SFML/Window/Event.hpp>
 
 #include <ctime>
@@ -82,6 +83,8 @@ void Application::run()
     float msTick = 1.f / (float)mOptions.get<int>("tickrate");
     float totTime = 0;
     sf::Clock theTime;
+
+    mStateMan.pushState(new GameState());
 
     sf::Event ev;
     while (mWindow.isOpen())

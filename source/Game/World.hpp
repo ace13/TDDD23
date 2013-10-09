@@ -2,7 +2,7 @@
 
 #include "Entity.hpp"
 
-struct b2World;
+class b2World;
 
 namespace Game
 {
