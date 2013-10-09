@@ -1,7 +1,9 @@
-find_package(SFML 2 REQUIRED COMPONENTS graphics window system)
+find_package(Box2D REQUIRED)
+find_package(SFML 2 REQUIRED COMPONENTS audio graphics window system)
 find_package(Angelscript REQUIRED COMPONENTS contextmgr debugger scriptany scriptarray scriptbuilder scriptdictionary scripthelper scriptmath scriptstdstring serializer)
 
 include_directories(
+    ${BOX2D_INCLUDE_DIR}
     ${SFML_INCLUDE_DIR}
     ${Angelscript_INCLUDE_DIR}
     ${Angelscript_ADDON_DIR}
@@ -21,6 +23,8 @@ set(GAME_SOURCE
     Game/Ship.cpp
     Game/Weapon.hpp
     Game/Weapon.cpp
+    Game/World.hpp
+    Game/World.cpp
 )
 
 set(MAIN_SOURCE
@@ -48,4 +52,4 @@ source_group(Game FILES ${GAME_SOURCE})
 
 add_executable(game main.cpp ${MAIN_SOURCE} ${DEBUG_SOURCE} ${GAME_SOURCE} ${Angelscript_HEADER} ${Angelscript_SOURCE})
 
-target_link_libraries(game ${SFML_LIBRARIES} ${Angelscript_LIBRARIES})
+target_link_libraries(game ${SFML_LIBRARIES} ${Angelscript_LIBRARIES} ${BOX2D_LIBRARY})

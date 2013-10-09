@@ -40,6 +40,7 @@ void TelemetryOverlay::drawUi(sf::RenderTarget& target)
     auto& ref = getApplication().getTelemetry();
     sprintf(tmp, "FPS (1,5,10):\n%f\n%f\n%f\nUPS: %d", ref.getFPS(), ref.getFPS(5), ref.getFPS(10), ref.getUPS());
 
-    sf::Text debug(tmp, *mFont, 16U);
+    sf::Text debug(tmp, *mFont, 12U);
+    debug.move(5, 5);
     target.draw(debug);
 }
