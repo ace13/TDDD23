@@ -1,6 +1,6 @@
 #include "Options.hpp"
-#include "Application.hpp"
-#include "Config.hpp"
+#include "../Application.hpp"
+#include "../Config.hpp"
 
 #include <iostream>
 #include <iomanip>

@@ -35,25 +35,31 @@ set(MAIN_SOURCE
     Application.cpp
     Config.hpp
     IState.hpp
-    Logger.hpp
-    Logger.cpp
-    Music.hpp
-    Music.cpp
-    Options.hpp
-    Options.cpp
     ScriptManager.hpp
     ScriptManager.cpp
     StateManager.hpp
     StateManager.cpp
-    Telemetry.hpp
-    Telemetry.cpp
 )
 
+set(UTIL_SOURCE
+    Util/LoadingScreen.hpp
+    Util/LoadingScreen.cpp
+    Util/Logger.hpp
+    Util/Logger.cpp
+    Util/Music.hpp
+    Util/Music.cpp
+    Util/Options.hpp
+    Util/Options.cpp
+    Util/Telemetry.hpp
+    Util/Telemetry.cpp
+)
+
+source_group(Utility FILES ${UTIL_SOURCE})
 source_group(Script FILES ${Angelscript_HEADER} ${Angelscript_SOURCE})
 source_group(Application FILES ${MAIN_SOURCE})
 source_group(Debug FILES ${DEBUG_SOURCE})
 source_group(Game FILES ${GAME_SOURCE})
 
-add_executable(game main.cpp ${MAIN_SOURCE} ${DEBUG_SOURCE} ${GAME_SOURCE} ${Angelscript_HEADER} ${Angelscript_SOURCE})
+add_executable(game main.cpp ${MAIN_SOURCE} ${DEBUG_SOURCE} ${GAME_SOURCE} ${UTIL_SOURCE} ${Angelscript_HEADER} ${Angelscript_SOURCE})
 
 target_link_libraries(game ${SFML_LIBRARIES} ${Angelscript_LIBRARIES} ${BOX2D_LIBRARY})
