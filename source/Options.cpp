@@ -1,5 +1,7 @@
 #include "Options.hpp"
 #include "Application.hpp"
+#include "Config.hpp"
+
 #include <iostream>
 #include <iomanip>
 #include <cstring>
@@ -21,14 +23,9 @@ Options::Options(Application& app) : mApp(app)
 
         std::cout << "Usage: " << mApp.getApplicationName() << " [OPTION]..." << std::endl
             << "Options:" << std::endl;
-#ifdef _WIN32
-        for (auto it = mStored.begin(); it != mStored.end(); ++it)
+
+        FOR_EACH(auto& i, mStored)
         {
-            auto i = *it;
-#else
-        for (auto& i : mStored)
-        {
-#endif
             std::cout << "  --" << std::setw(16) << std::left << i.first << "  \t" << i.second.Description << " (" << getName(i.second.Type) << ")" << std::endl;
         }
 
@@ -38,14 +35,8 @@ Options::Options(Application& app) : mApp(app)
 
 Options::~Options()
 {
-#ifdef _WIN32
-    for (auto it = mStored.begin(); it != mStored.end(); ++it)
+    FOR_EACH (auto& i, mStored)
     {
-        auto i = *it;
-#else
-    for (auto& i : mStored)
-    {
-#endif
         CVAR& cv = i.second;
         
         if (cv.Type == typeid(bool))
@@ -130,7 +121,7 @@ void Options::parseARGV(int argc, char** argv)
                 int i = 0;
                 if (sscanf(argv[i], "%1i", &i) == 1)
                     set(i > 0);
-                else if (strcmp(argv[i], "true"))
+                else if (strcmp(argv[i], "true") == 0)
                     set(true);
                 else
                     set(false);
@@ -163,14 +154,8 @@ void Options::parseARGV(int argc, char** argv)
                     continue;
                 }
 
-#ifdef _WIN32
-                for (auto it = mStored.begin(); it != mStored.end(); ++it)
+                FOR_EACH (auto& j, mStored)
                 {
-                    auto j = *it;
-#else
-                for (auto& j : mStored)
-                {
-#endif
                     if (j.first == str)
                     {
                         handle(j.second);
@@ -184,14 +169,8 @@ void Options::parseARGV(int argc, char** argv)
                 {
                     char c = str[j];
 
-#ifdef _WIN32
-                    for (auto it = mStored.begin(); it != mStored.end(); ++it)
+                    FOR_EACH (auto& k, mStored)
                     {
-                        auto k = *it;
-#else
-                    for (auto& k : mStored)
-                    {
-#endif
                         if (k.second.Name[0] == c)
                         {
                             handle(k.second);

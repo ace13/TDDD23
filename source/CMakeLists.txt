@@ -33,6 +33,7 @@ set(GAME_SOURCE
 set(MAIN_SOURCE
     Application.hpp
     Application.cpp
+    Config.hpp
     IState.hpp
     Logger.hpp
     Logger.cpp
