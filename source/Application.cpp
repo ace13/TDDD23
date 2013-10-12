@@ -67,7 +67,7 @@ void Application::run()
         aspect = s.x / s.y;
     }
 
-    mGameView = sf::View(sf::Vector2f(1000 * aspect, 1000), sf::Vector2f(0,0));
+    mGameView = sf::View(sf::Vector2f(500 * aspect, 500), sf::Vector2f(1000 * aspect, 1000));
 
     auto updateView = [&]() {
         mUiView.setSize((sf::Vector2f)mWindow.getSize());

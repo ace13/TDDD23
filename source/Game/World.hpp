@@ -23,6 +23,8 @@ public:
     void addPlanet(const Planet& planet);
     void addShip(const Ship& ship);
 
+    void draw(sf::RenderTarget& target);
+
 private:
     World(const World&);
     World& operator=(const World& other);

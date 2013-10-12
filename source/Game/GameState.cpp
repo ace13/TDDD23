@@ -76,7 +76,7 @@ void GameState::update(float dt)
 }
 void GameState::draw(sf::RenderTarget& target)
 {
-
+    mWorld.draw(target);
 }
 void GameState::drawUi(sf::RenderTarget& target)
 {

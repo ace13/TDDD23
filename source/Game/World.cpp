@@ -47,6 +47,14 @@ void World::update(float dt)
     }
 }
 
+void World::draw(sf::RenderTarget& target)
+{
+    FOR_EACH (auto& p, mPlanets)
+    {
+        p.draw(target);
+    }
+}
+
 void World::addPlanet(const Planet& p)
 {
     mPlanets.push_back(p);
