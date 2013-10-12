@@ -21,13 +21,13 @@ bool GameState::load()
     {
         loadStates[""] = [&]() {
             mWorld.init();
-            mWorld.setSize(sf::Vector2f(16000, 16000));
+            mWorld.setSize(sf::Vector2f(1600, 1600));
             mLoadState = "Settling planets";
         };
         loadStates["Settling planets"] = [&]() {
             static int totalPlanets = 0;
             
-            if (totalPlanets++ > 100)
+            if (totalPlanets++ > 10)
                 mLoadState = "Adding retards";
             else
             {

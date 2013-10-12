@@ -28,6 +28,8 @@ public:
     inline sf::Vector2f getSize() const { return mSize; }
     inline void setSize(sf::Vector2f size) { mSize = size; }
 
+    inline b2World* getBox2D() { return mBox2DWorld; }
+
 private:
     World(const World&);
     World& operator=(const World& other);

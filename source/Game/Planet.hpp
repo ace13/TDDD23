@@ -9,13 +9,14 @@ class b2Body;
 namespace Game
 {
 
+class World;
+
 class Planet
 {
 public:
     Planet();
     ~Planet();
 
-    inline float getMass() const { return mMass; }
     inline float getRadius() const { return mRadius; }
     inline sf::Vector2f getPosition() const { return mPosition; }
     inline void setPosition(const sf::Vector2f& pos) { mPosition = pos; }
@@ -23,11 +24,12 @@ public:
     inline bool getDirty() const { return mDirty; }
     inline void resetDirty() { mDirty = false; }
 
+    void addedToWorld(World& world);
+    
     void draw(sf::RenderTarget& target);
 
 private:
     bool mDirty;
-    float mMass;
     float mRadius;
     sf::Vector2f mPosition;
     b2Body* mBody;
