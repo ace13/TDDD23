@@ -120,9 +120,9 @@ void ScriptManager::messageCallback(const asSMessageInfo *msg)
 {
      Logger::Level lvl = Logger::Error;
 
-     if (msg->type == asEMsgType::asMSGTYPE_WARNING)
+     if (msg->type == asMSGTYPE_WARNING)
          lvl = Logger::Warning;
-     else if (msg->type == asEMsgType::asMSGTYPE_INFORMATION)
+     else if (msg->type == asMSGTYPE_INFORMATION)
          lvl = Logger::Info;
 
      mApp.getLogger().log("%s:%d:%d: %s", lvl, msg->section, msg->row, msg->col, msg->message);

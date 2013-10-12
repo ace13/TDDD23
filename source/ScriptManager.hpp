@@ -6,7 +6,7 @@
 
 class asIScriptContext;
 class asIScriptEngine;
-class asSMessageInfo;
+struct asSMessageInfo;
 class Application;
 
 #define asAssert(r) assert((r) >= 0)
