@@ -25,9 +25,14 @@ public:
 
     void draw(sf::RenderTarget& target);
 
+    inline sf::Vector2f getSize() const { return mSize; }
+    inline void setSize(sf::Vector2f size) { mSize = size; }
+
 private:
     World(const World&);
     World& operator=(const World& other);
+
+    sf::Vector2f mSize;
 
     std::vector<Planet> mPlanets;
     std::vector<Ship> mShips;

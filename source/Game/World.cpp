@@ -4,6 +4,7 @@
 #include "../Config.hpp"
 
 #include <Box2D/Box2D.h>
+#include <random>
 
 using namespace Game;
 
@@ -47,17 +48,31 @@ void World::update(float dt)
     }
 }
 
+///\FIXME Don't draw everything always.
 void World::draw(sf::RenderTarget& target)
 {
     FOR_EACH (auto& p, mPlanets)
     {
         p.draw(target);
     }
+
+    FOR_EACH(auto& s, mShips)
+    {
+        s.draw(target);
+    }
 }
 
 void World::addPlanet(const Planet& p)
 {
-    mPlanets.push_back(p);
+    Game::Planet tmp = p;
+
+    std::random_device dev;
+    std::uniform_real_distribution<float> distX(0, mSize.x);
+    std::uniform_real_distribution<float> distY(0, mSize.y);
+
+    tmp.setPosition(sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f));
+
+    mPlanets.push_back(tmp);
 }
 
 void World::addShip(const Ship& s)

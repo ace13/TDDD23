@@ -21,6 +21,7 @@ bool GameState::load()
     {
         loadStates[""] = [&]() {
             mWorld.init();
+            mWorld.setSize(sf::Vector2f(16000, 16000));
             mLoadState = "Settling planets";
         };
         loadStates["Settling planets"] = [&]() {
@@ -38,19 +39,19 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 100)
+            if (totalRetards++ > 1)
                 mLoadState = "Finalizing";
         };
         loadStates["Finalizing"] = [&]() { 
             static int finalizeWait = 0;
 
-            if (finalizeWait++ > 100)
+            if (finalizeWait++ > 1)
                 mLoadState = "Doing absolutely nothing";
         };
         loadStates["Doing absolutely nothing"] = [&]() { 
             static int noWait = 0;
 
-            if (noWait++ > 100)
+            if (noWait++ > 1)
                 mLoadState = "Done";
         };
     }

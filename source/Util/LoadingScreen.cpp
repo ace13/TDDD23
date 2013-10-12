@@ -60,10 +60,8 @@ void LoadingScreen::drawUi(sf::RenderTarget& target)
         loadingText.setPosition(size.x / 2.f, size.y - tsize.height * 2);
     }
 
-    target.draw(loadingSpinner);
     target.draw(loadingText);
 
-    int i = 0;
     FOR_EACH(auto& text, mLastMessages)
     {
         loadingText.setString(text);
@@ -78,6 +76,8 @@ void LoadingScreen::drawUi(sf::RenderTarget& target)
 
         target.draw(loadingText);
     }
+
+    target.draw(loadingSpinner);
 }
 
 

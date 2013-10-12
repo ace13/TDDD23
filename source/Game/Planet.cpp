@@ -29,7 +29,7 @@ float Planet::getPercentage() const
 void Planet::draw(sf::RenderTarget& target)
 {
     ///\TODO Better graphics :D
-    sf::CircleShape shape(mRadius);
+    sf::CircleShape shape(mRadius, 64);
     shape.setFillColor(sf::Color::White);
     shape.setOutlineColor(sf::Color::Black);
     shape.setOutlineThickness(4.f);

@@ -18,6 +18,7 @@ public:
     inline float getMass() const { return mMass; }
     inline float getRadius() const { return mRadius; }
     inline sf::Vector2f getPosition() const { return mPosition; }
+    inline void setPosition(const sf::Vector2f& pos) { mPosition = pos; }
     float getPercentage() const;
     inline bool getDirty() const { return mDirty; }
     inline void resetDirty() { mDirty = false; }
