@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/System/Vector2.hpp>
+#include "Entity.hpp"
 
 namespace sf { class RenderTarget; }
 
@@ -11,7 +11,7 @@ namespace Game
 
 class World;
 
-class Planet
+class Planet : public Entity
 {
 public:
     Planet();

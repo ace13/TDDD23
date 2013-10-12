@@ -2,6 +2,7 @@
 
 #include "../IState.hpp"
 #include <SFML/Graphics/Font.hpp>
+#include <list>
 
 class LoadingScreen : public IState
 {
@@ -23,7 +24,7 @@ public:
 private:
     float mTime;
     std::string mCurrentString;
-    std::vector<std::string> mLastMessages;
+    std::list<std::string> mLastMessages;
 
     std::shared_ptr<sf::Font> mFont;
     std::shared_ptr<sf::Texture> mSpinner;

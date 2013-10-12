@@ -15,6 +15,9 @@ World::World() : mBox2DWorld(nullptr)
 
 World::~World()
 {
+    mPlanets.clear();
+    mShips.clear();
+
     if (mBox2DWorld)
         delete mBox2DWorld;
 }

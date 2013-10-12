@@ -21,35 +21,51 @@ Planet::Planet() :
 
 Planet::~Planet()
 {
-    
+    if (mBody)
+        mBody->GetWorld()->DestroyBody(mBody);
+    mBody = nullptr;
 }
 
 void Planet::addedToWorld(World& world)
 {
     auto& b2d = *world.getBox2D();
 
-    b2BodyDef def;
-    def.type = b2_staticBody;
-    def.position = b2Vec2(mPosition.x, mPosition.y);
-    def.angle = 0;
-    def.linearVelocity = b2Vec2(0, 0);
-    def.angularVelocity = 0;
-    def.linearDamping = 0;
-    def.angularDamping = 0;
-    def.allowSleep = true;
-    def.awake = true;
-    def.fixedRotation = true;
-    def.bullet = false;
-    def.active = true;
-    def.userData = this;
-    def.gravityScale = 0;
+    {
+        b2BodyDef def;
+        def.type = b2_staticBody;
+        def.position = b2Vec2(mPosition.x, mPosition.y);
+        def.angle = 0;
+        def.linearVelocity = b2Vec2(0, 0);
+        def.angularVelocity = 0;
+        def.linearDamping = 0;
+        def.angularDamping = 0;
+        def.allowSleep = true;
+        def.awake = true;
+        def.fixedRotation = true;
+        def.bullet = false;
+        def.active = true;
+        def.userData = this;
+        def.gravityScale = 0;
 
-    mBody = b2d.CreateBody(&def);
-    
+        mBody = b2d.CreateBody(&def);
+    }
+
     auto& body = *mBody;
     
+    {
+        b2CircleShape shape;
+        shape.m_p.SetZero();
+        shape.m_radius = mRadius * 10;
 
-    
+        b2FixtureDef def;
+        def.density = 1;
+        def.isSensor = false;
+        def.friction = 1;
+        def.restitution = 0.25f;
+        def.shape = &shape;
+
+        auto fix = body.CreateFixture(&def);
+    }
 }
 
 float Planet::getPercentage() const

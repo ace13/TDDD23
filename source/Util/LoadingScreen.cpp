@@ -84,7 +84,7 @@ void LoadingScreen::drawUi(sf::RenderTarget& target)
 void LoadingScreen::setLoadingText(const std::string& text)
 {
     if (text != mCurrentString && !mCurrentString.empty())
-        mLastMessages.push_back(mCurrentString);
+        mLastMessages.push_front(mCurrentString);
 
     mCurrentString = text;
 }
