@@ -27,7 +27,7 @@ bool GameState::load()
         loadStates["Settling planets"] = [&]() {
             static int totalPlanets = 0;
             
-            if (totalPlanets++ > 10)
+            if (totalPlanets++ > 100)
                 mLoadState = "Adding retards";
             else
             {
@@ -39,19 +39,19 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 1)
+            if (totalRetards++ > 100)
                 mLoadState = "Finalizing";
         };
         loadStates["Finalizing"] = [&]() { 
             static int finalizeWait = 0;
 
-            if (finalizeWait++ > 1)
-                mLoadState = "Doing absolutely nothing";
+            if (finalizeWait++ > 100)
+                mLoadState = "Doing absolutely nothing for ten seconds";
         };
-        loadStates["Doing absolutely nothing"] = [&]() { 
+        loadStates["Doing absolutely nothing for ten seconds"] = [&]() { 
             static int noWait = 0;
 
-            if (noWait++ > 1)
+            if (noWait++ > 66 * 10)
                 mLoadState = "Done";
         };
     }

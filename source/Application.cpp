@@ -56,7 +56,14 @@ void Application::run()
             w = 800; h = 600;
         }
 
-        mWindow.create(sf::VideoMode(w, h), "TDDD23", (mOptions.get<bool>("fullscreen") ? sf::Style::Fullscreen : sf::Style::Default));
+        if (mOptions.get<bool>("fullscreen"))
+        {
+            auto mode = sf::VideoMode::getDesktopMode();
+            w = mode.width;
+            h = mode.height;
+        }
+
+        mWindow.create(sf::VideoMode(w, h), "TDDD23", (mOptions.get<bool>("fullscreen") ? sf::Style::None : sf::Style::Default));
     }
 
     mUiView = mWindow.getDefaultView();
