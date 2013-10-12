@@ -18,6 +18,7 @@ TelemetryOverlay::~TelemetryOverlay()
 
 bool TelemetryOverlay::load()
 {
+    ///\FIXME Implement a resource manager
     mFont = std::make_shared<sf::Font>();
     mFont->loadFromFile("Dosis-Book.ttf");
 

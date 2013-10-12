@@ -36,7 +36,22 @@ bool GameState::load()
             }
         };
         loadStates["Adding retards"] = [&]() {
-            mLoadState = "Finalizing";
+            static int totalRetards = 0;
+
+            if (totalRetards++ > 100)
+                mLoadState = "Finalizing";
+        };
+        loadStates["Finalizing"] = [&]() { 
+            static int finalizeWait = 0;
+
+            if (finalizeWait++ > 100)
+                mLoadState = "Doing absolutely nothing";
+        };
+        loadStates["Doing absolutely nothing"] = [&]() { 
+            static int noWait = 0;
+
+            if (noWait++ > 100)
+                mLoadState = "Done";
         };
     }
 

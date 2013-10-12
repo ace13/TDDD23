@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Logger.hpp"
-#include "Options.hpp"
+#include "Util/Logger.hpp"
+#include "Util/Options.hpp"
 #include "ScriptManager.hpp"
 #include "StateManager.hpp"
-#include "Telemetry.hpp"
+#include "Util/Telemetry.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Application

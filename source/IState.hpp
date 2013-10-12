@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StateManager.hpp"
+#include <string>
 
 namespace sf 
 {

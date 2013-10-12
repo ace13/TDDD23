@@ -84,7 +84,7 @@ void Application::run()
     float totTime = 0;
     sf::Clock theTime;
 
-    mStateMan.pushState(new GameState());
+    mStateMan.pushState(new GameState()); ///\TODO Menustate
 
     sf::Event ev;
     while (mWindow.isOpen())

@@ -27,6 +27,7 @@ public:
 private:
     friend class IState;
     Application& mApp;
+    IState* mLoad;
 
     bool mShowDebug;
     bool mStateDirty;

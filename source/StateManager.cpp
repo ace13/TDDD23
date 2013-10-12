@@ -4,15 +4,20 @@
 #include "Config.hpp"
 
 #include "Debug/TelemetryOverlay.hpp"
+#include "Util/LoadingScreen.hpp"
+
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 StateManager::StateManager(Application& app): 
-    mApp(app), mShowDebug(false), mStateDirty(false)
+    mApp(app), mShowDebug(false), mStateDirty(false), mLoad(new LoadingScreen())
 {
-#ifndef NDEBUG
+#ifdef DEBUG
     mShowDebug = true;
 #endif
+
+    mLoad->mStateMan = this;
+    mLoad->load();
 
     pushState(new TelemetryOverlay());
     mDrawQueue.back()->load();
@@ -22,7 +27,7 @@ StateManager::StateManager(Application& app):
 
 StateManager::~StateManager()
 {
-
+    delete mLoad;
 }
 
 void StateManager::pushState(IState* state)
@@ -88,12 +93,20 @@ void StateManager::doUpdate(float dt)
         }
     }
 
+    mLoad->update(dt);
+
     FOR_EACH (IState* state, mDrawQueue)
     {
-        if (!state->hasLoaded())
-            state->loadStage();
-        else
+        if (state->hasLoaded())
+        {
+            mLoad->unload(); ///\TODO Cache this.
             state->update(dt);
+        }
+        else
+        {
+            state->loadStage();
+            static_cast<LoadingScreen*>(mLoad)->setLoadingText(state->getLoadState());
+        }
     }
 
     mStates.front()->update(dt); // Update the Telemetry Overlay
@@ -114,8 +127,7 @@ void StateManager::doDrawUi(sf::RenderTarget& target)
             state->drawUi(target);
         else
         {
-            target.clear(sf::Color::White);
-            ///\TODO Draw loading screen
+            mLoad->drawUi(target);
         }
     }
 
