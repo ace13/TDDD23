@@ -6,11 +6,12 @@
 class GameState : public IState
 {
 public:
-	GameState();
-	~GameState();
+    GameState();
+    ~GameState();
 
-	void load();
+    bool load();
     void unload();
+    std::string getLoadState() const { return mLoadState; }
 
     bool event(const sf::Event& ev);
     void update(float dt);
@@ -18,5 +19,6 @@ public:
     void drawUi(sf::RenderTarget& target);
 
 private:
-	Game::World mWorld;
+    std::string mLoadState;
+    Game::World mWorld;
 };

@@ -1,9 +1,11 @@
 #include "StateManager.hpp"
 #include "Application.hpp"
 #include "IState.hpp"
+#include "Config.hpp"
 
 #include "Debug/TelemetryOverlay.hpp"
 #include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 StateManager::StateManager(Application& app): 
     mApp(app), mShowDebug(false), mStateDirty(false)
@@ -13,6 +15,7 @@ StateManager::StateManager(Application& app):
 #endif
 
     pushState(new TelemetryOverlay());
+    mDrawQueue.back()->load();
     mDrawQueue.pop_back(); /* Don't want it in the draw queue,
                             * it's going to be manually taken care of */
 }
@@ -28,7 +31,6 @@ void StateManager::pushState(IState* state)
     if ((it = std::find(mStates.begin(), mStates.end(), state)) != mStates.end())
         return;
 
-    state->load();
     mStates.push_back(state);
     mDrawQueue.push_back(state);
     state->mStateMan = this;
@@ -45,9 +47,9 @@ void StateManager::popState()
 
 bool StateManager::doEvent(const sf::Event& ev)
 {
-    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
+    FOR_EACH (IState* state, mDrawQueue)
     {
-        bool s = (*it)->event(ev);
+        bool s = state->event(ev);
         if (s)
             return true;
     }
@@ -65,17 +67,20 @@ void StateManager::doUpdate(float dt)
         mStateDirty = false;
         for (auto it = mStates.begin(); it != mStates.end();)
         {
-            if ((*it)->isDestroyed())
+            auto state = *it;
+
+            if (state->isDestroyed())
             {
-                for (auto it2 = mDrawQueue.begin(); it2 != mDrawQueue.end(); ++it2)
-                    if (*it2 == *it)
+                FOR_EACH (IState* state2, mDrawQueue)
+                    if (state == state2)
                     {
-                        mDrawQueue.erase(it2);
+                        mDrawQueue.remove(state2);
                         break;
                     }
 
-                (*it)->unload();
-                delete *it;
+                state->unloadStage();
+                delete state;
+
                 it = mStates.erase(it);
             }
             else
@@ -83,22 +88,36 @@ void StateManager::doUpdate(float dt)
         }
     }
 
-    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-        (*it)->update(dt);
+    FOR_EACH (IState* state, mDrawQueue)
+    {
+        if (!state->hasLoaded())
+            state->loadStage();
+        else
+            state->update(dt);
+    }
 
     mStates.front()->update(dt); // Update the Telemetry Overlay
 }
 
 void StateManager::doDraw(sf::RenderTarget& target)
 {
-    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-        (*it)->draw(target);
+    FOR_EACH (IState* state, mDrawQueue)
+        if (state->hasLoaded())
+            state->draw(target);
 }
 
 void StateManager::doDrawUi(sf::RenderTarget& target)
 {
-    for (auto it = mDrawQueue.begin(); it != mDrawQueue.end(); ++it)
-        (*it)->drawUi(target);
+    FOR_EACH (IState* state, mDrawQueue)
+    {
+        if (state->hasLoaded())
+            state->drawUi(target);
+        else
+        {
+            target.clear(sf::Color::White);
+            ///\TODO Draw loading screen
+        }
+    }
 
     if (mShowDebug)
         mStates.front()->drawUi(target); // Draw the Telemetry Overlay

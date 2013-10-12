@@ -11,10 +11,11 @@ public:
     TelemetryOverlay();
     ~TelemetryOverlay();
 
-    void load();
+    bool load();
     void unload();
+    std::string getLoadState() const { return ""; }
 
-    inline bool event(const sf::Event& ev) { return false; }
+    inline bool event(const sf::Event& ev) { return true; }
     void update(float dt);
     inline void draw(sf::RenderTarget& target) { }
     void drawUi(sf::RenderTarget& target);

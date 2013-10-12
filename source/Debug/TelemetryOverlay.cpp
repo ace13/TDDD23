@@ -16,10 +16,12 @@ TelemetryOverlay::~TelemetryOverlay()
 }
 
 
-void TelemetryOverlay::load()
+bool TelemetryOverlay::load()
 {
     mFont = std::make_shared<sf::Font>();
     mFont->loadFromFile("Dosis-Book.ttf");
+
+    return true;
 }
 
 void TelemetryOverlay::unload()
