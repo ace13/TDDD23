@@ -1,11 +1,12 @@
 #include "GameState.hpp"
 #include "Planet.hpp"
+#include "Ship.hpp"
 
 #include <unordered_map>
 #include <functional>
 #include <string>
 
-GameState::GameState()
+GameState::GameState() : mLoadState("Creating the universe")
 {
 
 }
@@ -19,12 +20,23 @@ bool GameState::load()
     static std::unordered_map<std::string, std::function<void()> > loadStates;
     if (loadStates.empty())
     {
-        loadStates[""] = [&]() {
-            mWorld.init();
-            mWorld.setSize(sf::Vector2f(1600, 1600));
-            mLoadState = "Settling planets";
+        loadStates["Creating the universe"] = [&]() {
+            static int stage = 0;
+            switch (stage++)
+            {
+            case 0:
+                mWorld.init();
+                mWorld.setSize(sf::Vector2f(1600, 1600));
+                break;
+
+            case 1:
+                break;
+
+            default:
+                mLoadState = "Placing planets";
+            }
         };
-        loadStates["Settling planets"] = [&]() {
+        loadStates["Placing planets"] = [&]() {
             static int totalPlanets = 0;
             
             if (totalPlanets++ > 100)
@@ -39,19 +51,35 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 100)
+            if (totalRetards++ > 3)
+                mLoadState = "Giving them guns";
+            else
+            {
+                Game::Ship s;
+
+                mWorld.addShip(s);
+            }
+        };
+        loadStates["Giving them guns"] = [&]() {
+            static int scripts = 0;
+
+            if (scripts++ > 100)
                 mLoadState = "Finalizing";
+            else
+            {
+
+            }
         };
         loadStates["Finalizing"] = [&]() { 
             static int finalizeWait = 0;
 
             if (finalizeWait++ > 100)
-                mLoadState = "Doing absolutely nothing for ten seconds";
+                mLoadState = "Reticulating splines";
         };
-        loadStates["Doing absolutely nothing for ten seconds"] = [&]() { 
+        loadStates["Reticulating splines"] = [&]() { 
             static int noWait = 0;
 
-            if (noWait++ > 66 * 10)
+            if (noWait++ > 10)
                 mLoadState = "Done";
         };
     }

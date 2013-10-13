@@ -68,6 +68,13 @@ void Planet::addedToWorld(World& world)
     }
 }
 
+void Planet::setPosition(const sf::Vector2f& pos)
+{
+    mPosition = pos;
+    if (mBody)
+        mBody->SetTransform(b2Vec2(pos.x, pos.y), 0);
+}
+
 float Planet::getPercentage() const
 {
     return 1;

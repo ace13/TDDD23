@@ -18,14 +18,16 @@ public:
     ~Planet();
 
     inline float getRadius() const { return mRadius; }
-    inline sf::Vector2f getPosition() const { return mPosition; }
-    inline void setPosition(const sf::Vector2f& pos) { mPosition = pos; }
+    sf::Vector2f getPosition() const { return mPosition; }
+    inline float getAngle() const { return 0; }
+    void setPosition(const sf::Vector2f& pos);
     float getPercentage() const;
     inline bool getDirty() const { return mDirty; }
     inline void resetDirty() { mDirty = false; }
 
     void addedToWorld(World& world);
     
+    void update(float) { }
     void draw(sf::RenderTarget& target);
 
 private:
