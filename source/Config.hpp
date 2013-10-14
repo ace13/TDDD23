@@ -2,7 +2,6 @@
 
 #if defined(_WIN32)
 #define WINDOWS
-#define _CRT_SECURE_NO_WARNINGS
 #elif defined(__LINUX__)
 #define POSIX
 #endif

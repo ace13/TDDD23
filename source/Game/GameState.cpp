@@ -67,7 +67,7 @@ bool GameState::load()
                 mLoadState = "Finalizing";
             else
             {
-
+                ///\TODO Load weapons from scripts.
             }
         };
         loadStates["Finalizing"] = [&]() { 

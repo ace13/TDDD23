@@ -21,7 +21,7 @@ public:
     std::string getApplicationName() const;
 
 private:
-	friend class StateManager;
+    friend class StateManager;
 
     std::string mAppName;
 

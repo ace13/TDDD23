@@ -10,6 +10,9 @@ namespace sf {
 class Application;
 class IState;
 
+class Console;
+class LoadingScreen;
+
 class StateManager
 {
 public:
@@ -27,7 +30,8 @@ public:
 private:
     friend class IState;
     Application& mApp;
-    IState* mLoad;
+    LoadingScreen* mLoad;
+    Console* mConsole;
 
     bool mShowDebug;
     bool mStateDirty;

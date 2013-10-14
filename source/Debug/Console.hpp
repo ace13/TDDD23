@@ -11,8 +11,9 @@ public:
     Console();
     ~Console();
 
-    void load();
+    bool load();
     void unload();
+    std::string getLoadState() const;
 
     bool event(const sf::Event& ev);
     void update(float dt);
@@ -21,4 +22,6 @@ public:
 
 private:
     std::shared_ptr<sf::Font> mFont;
+
+    std::string mCurrentLine;
 };

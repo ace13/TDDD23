@@ -4,20 +4,19 @@
 #include "Config.hpp"
 
 #include "Debug/TelemetryOverlay.hpp"
+#include "Debug/Console.hpp"
 #include "Util/LoadingScreen.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 StateManager::StateManager(Application& app): 
-    mApp(app), mShowDebug(false), mStateDirty(false), mLoad(new LoadingScreen())
+    mApp(app), mShowDebug(false), mStateDirty(false), mLoad(new LoadingScreen()), mConsole(new Console())
 {
-#ifdef DEBUG
-    mShowDebug = true;
-#endif
-
     mLoad->mStateMan = this;
     mLoad->load();
+    mConsole->mStateMan = this;
+    mConsole->load();
 
     pushState(new TelemetryOverlay());
     mDrawQueue.back()->load();
@@ -52,6 +51,14 @@ void StateManager::popState()
 
 bool StateManager::doEvent(const sf::Event& ev)
 {
+    if (ev.type == sf::Event::KeyReleased && ev.key.code == sf::Keyboard::BackSlash)
+    {
+        mShowDebug = !mShowDebug;
+    }
+
+    if (mShowDebug && mConsole->event(ev))
+        return true;
+
     FOR_EACH (IState* state, mDrawQueue)
     {
         bool s = state->event(ev);
@@ -105,11 +112,13 @@ void StateManager::doUpdate(float dt)
         else
         {
             state->loadStage();
-            static_cast<LoadingScreen*>(mLoad)->setLoadingText(state->getLoadState());
+            mLoad->setLoadingText(state->getLoadState());
         }
     }
 
     mStates.front()->update(dt); // Update the Telemetry Overlay
+    if (mShowDebug)
+        mConsole->update(dt);
 }
 
 void StateManager::doDraw(sf::RenderTarget& target)
@@ -132,5 +141,8 @@ void StateManager::doDrawUi(sf::RenderTarget& target)
     }
 
     if (mShowDebug)
+    {
+        mConsole->drawUi(target);
         mStates.front()->drawUi(target); // Draw the Telemetry Overlay
+    }
 }
