@@ -2,6 +2,7 @@
 
 #include "../IState.hpp"
 #include <memory>
+#include <list>
 
 namespace sf { class Font; }
 
@@ -22,6 +23,8 @@ public:
 
 private:
     std::shared_ptr<sf::Font> mFont;
+    std::list<std::string> mOutput;
 
+    std::list<std::string> mOldLines;
     std::string mCurrentLine;
 };
