@@ -46,9 +46,9 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
     sf::CircleShape circle(radius * RATIO);
     
     circle.setOrigin(radius * RATIO, radius * RATIO);
-    circle.setOutlineColor(B2SFColor(color));
-    circle.setOutlineThickness(LINE_THICK);
-    circle.setFillColor(B2SFColor(color, 50));
+    //circle.setOutlineColor(B2SFColor(color));
+    //circle.setOutlineThickness(LINE_THICK);
+    circle.setFillColor(B2SFColor(color));
     circle.setPosition(center.x * RATIO, center.y * RATIO);
 
     this->window->draw(circle);
@@ -61,8 +61,8 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
     sf::CircleShape circle(radius);
 
     circle.setOrigin(radius * RATIO, radius * RATIO);
-    circle.setOutlineColor(B2SFColor(color));
-    circle.setOutlineThickness(LINE_THICK);
+    //circle.setOutlineColor(B2SFColor(color));
+    //circle.setOutlineThickness(LINE_THICK);
     circle.setFillColor(sf::Color::Transparent);
     circle.setPosition(center.x * RATIO, center.y * RATIO);
 
@@ -77,9 +77,9 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
         b2Vec2 vertex = vertices[i];
         polygon.setPoint(i, sf::Vector2f(vertex.x*RATIO, vertex.y*RATIO));
     }
-    polygon.setFillColor(B2SFColor(color,50));
-    polygon.setOutlineColor(B2SFColor(color));
-    polygon.setOutlineThickness(LINE_THICK);
+    polygon.setFillColor(B2SFColor(color));
+    //polygon.setOutlineColor(B2SFColor(color));
+    //polygon.setOutlineThickness(LINE_THICK);
     this->window->draw(polygon);
 
 }
