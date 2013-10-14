@@ -65,9 +65,9 @@ void Ship::addedToWorld(World& world)
     {
         b2PolygonShape shape;
         b2Vec2 points[] = {
-            b2Vec2(0, -15),
-            b2Vec2(10, 5),
-            b2Vec2(-10, 5)
+            b2Vec2(0, -5),
+            b2Vec2(5, 5),
+            b2Vec2(-5, 5)
         };
         shape.Set(points, sizeof(points)/sizeof(b2Vec2));
 
@@ -75,7 +75,7 @@ void Ship::addedToWorld(World& world)
         def.density = 1;
         def.isSensor = false;
         def.friction = 1;
-        def.restitution = 0.25f;
+        def.restitution = 0.01f;
         def.shape = &shape;
 
         auto fix = body.CreateFixture(&def);
@@ -95,11 +95,9 @@ void Ship::addGravity(const sf::Vector2f& pos)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f direction = getUnit(pos - getPosition());
+    sf::Vector2f delta = (getPosition() - pos) / dist;
 
-    auto force = direction;// * (float)sqrt(dist);
-
-    mBody->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
+    mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }
 
 
@@ -120,7 +118,7 @@ void Ship::draw(sf::RenderTarget& target)
 
     float ang = mBody->GetAngle();
     auto pos = mBody->GetPosition();
-    shape.setRotation(ang);
+    shape.setRotation(ang * (180/3.14159));
     shape.setOrigin(sf::Vector2f(0, -10));
     shape.setPosition(pos.x, pos.y);
 
