@@ -73,29 +73,22 @@ void Application::run()
     }
 
     mUiView = mWindow.getDefaultView();
-
-    float aspect;
-    {
-        sf::Vector2f s = (sf::Vector2f)mWindow.getSize();
-        aspect = s.x / s.y;
-    }
-
-    mGameView = sf::View(sf::Vector2f(500 * aspect, 500), sf::Vector2f(1000 * aspect, 1000));
-
     auto updateView = [&]() {
-        sf::Vector2f s = (sf::Vector2f)mWindow.getSize();
-        aspect = s.x / s.y;
+        auto size = (sf::Vector2f)mWindow.getSize();
+        float aspect = size.x / size.y;
 
-        mUiView.setSize(s);
-        mUiView.setCenter(s / 2.f);
+        mGameView.setSize(mGameView.getSize().y * aspect, mGameView.getSize().y);
 
-        mGameView.setSize(sf::Vector2f(1000 * aspect, 1000));
+        mUiView.setSize(size);
+        mUiView.setCenter(size / 2.f);
 
         auto uiS = mUiView.getSize(), uiC = mUiView.getCenter();
         auto gameS = mGameView.getSize(), gameC = mGameView.getCenter();
 
         mLogger.log("Window resized, view sizes:\n\tUI: %.2fx%.2f\n\tGame: %.2fx%.2f", Logger::Info, uiS.x, uiS.y, gameS.x, gameS.y);
     };
+
+    updateView();
 
     float msTick = 1.f / (float)mOptions.get<int>("tickrate");
     float totTime = 0;
@@ -161,4 +154,31 @@ void Application::run()
     }
 
     mLogger.log("Shutting down application", Logger::Info);
+}
+
+sf::Vector2f Application::getMouse(bool ui)
+{
+    sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(mWindow);
+    sf::Vector2f vS, vC;
+
+    if (ui)
+    {
+        vS = mUiView.getSize();
+        vC = mUiView.getCenter();
+    }
+    else
+    {
+        vS = mGameView.getSize();
+        vC = mGameView.getCenter();
+    }
+
+    sf::Vector2f windowSize = (sf::Vector2f)mWindow.getSize();
+        
+    sf::FloatRect mViewRect;
+    mViewRect.left = vC.x-vS.x/2;
+    mViewRect.top = vC.y-vS.y/2;
+    mViewRect.width = vS.x;
+    mViewRect.height = vS.y;
+
+    return sf::Vector2f(mViewRect.left + mViewRect.width * (mousePos.x/windowSize.x), mViewRect.top + mViewRect.height * (mousePos.y/windowSize.y));
 }

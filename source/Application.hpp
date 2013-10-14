@@ -22,6 +22,9 @@ public:
     Logger& getLogger();
     std::string getApplicationName() const;
 
+    inline sf::View& getGameView() { return mGameView; }
+    sf::Vector2f getMouse(bool ui = false);
+
 private:
     friend class StateManager;
 
