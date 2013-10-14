@@ -16,7 +16,9 @@ public:
     void init(int argc, char** argv);
     void run();
 
-    const Telemetry& getTelemetry() const;
+    inline Options& getOptions() { return mOptions; }
+    inline ScriptManager& getScript() { return mScriptMan; }
+    Telemetry& getTelemetry();
     Logger& getLogger();
     std::string getApplicationName() const;
 

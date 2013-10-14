@@ -1,10 +1,11 @@
 #include "Application.hpp"
 #include "Game/GameState.hpp"
+#include "Config.hpp"
 #include <SFML/Window/Event.hpp>
 
 #include <ctime>
 
-Application::Application(): mStateMan(*this), mScriptMan(*this), mOptions(*this)
+Application::Application(): mStateMan(*this), mScriptMan(*this), mOptions(*this), mLogger(*this)
 {
     /// \TODO Redirect sf::err to Logger
 }
@@ -15,19 +16,24 @@ Application::~Application()
 
 void Application::init(int argc, char** argv)
 {
+#ifdef WINDOWS
     mAppName = argv[0];
+    // mAppName = mAppName.substr() // Cut out to last backslash
+#else
+    mAppName = argv[0];
+#endif
 
     // Add options
     mOptions.addVariable<std::string>("resolution", "800x600", "The resolution of the window");
     mOptions.addVariable<bool>("fullscreen", false, "Run in a fullscreen window");
-    mOptions.addVariable<bool>("verbose", false, "");
     mOptions.addVariable<int>("tickrate", 66, "Update ticks per second");
 
     mOptions.parseARGV(argc, argv);
+    mLogger.init();
     mScriptMan.init();
 }
 
-const Telemetry& Application::getTelemetry() const
+Telemetry& Application::getTelemetry()
 {
     return mTelem;
 }

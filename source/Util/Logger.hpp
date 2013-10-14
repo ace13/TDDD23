@@ -6,6 +6,8 @@
 
 #define LOG_LINE(text) __FILE__, __LINE__, text
 
+class Application;
+
 class Logger
 {
 public:
@@ -15,7 +17,8 @@ public:
 		Debug,
 		Warning,
 		Error,
-		Fatal
+		Fatal,
+		Script
 	};
 
     struct Message
@@ -28,8 +31,10 @@ public:
         unsigned int line;
     };
 
-	Logger();
+	Logger(Application& app);
 	~Logger();
+
+	void init();
 
 	void setLogger(Level l, const std::function<void(const Message&)>&);
     void clearLogger(Level l);
@@ -39,4 +44,6 @@ public:
 
 private:
 	std::unordered_map<Level, std::function<void(const Message&)>, std::hash<int> > mLoggers;
+	Application& mApp;
+	bool mVerbose;
 };

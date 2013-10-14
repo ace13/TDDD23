@@ -1,4 +1,5 @@
 #include "Logger.hpp"
+#include "../Application.hpp"
 
 #include <stdexcept>
 #include <iostream>
@@ -22,6 +23,8 @@ namespace
             return "Error";
         case 4:
             return "Fatal error";
+        case 5:
+            return "Script";
         }
         return "Unknown";
     }
@@ -32,23 +35,37 @@ namespace
         strftime(tmp, 256, "%y-%m-%d %H:%M:%S", localtime(&raw));
         return tmp;
     }
+    void defaultLog(const Logger::Message& msg)
+    {
+        std::ostream& os = (msg.level > 2 ? std::cout : std::cerr);
+        os << "[" << timestamp() << "] ";
+        if (msg.positional)
+            os << msg.file << ":" << msg.line << " ";
+        os << getLevelName(msg.level) << ": " << msg.message << std::endl;
+    }
 }
 
-Logger::Logger()
+Logger::Logger(Application& app) : mApp(app), mVerbose(false)
 {
-    for (int i = 0; i < 4; ++i)
-        mLoggers[(Level)i] = [](const Message& msg) {
-            std::ostream& os = (msg.level > 2 ? std::cout : std::cerr);
-            os << "[" << timestamp() << "] ";
-            if (msg.positional)
-                os << msg.file << ":" << msg.line << " ";
-            os << getLevelName(msg.level) << ": " << msg.message << std::endl;
-        };
-    mLoggers[Fatal] = [](const Message& msg) { throw std::runtime_error("FATAL ERROR\n" + msg.message); };
+    auto& opt = mApp.getOptions();
+
+    opt.registerVariable(mVerbose, "verbose", "Should the program run verbosely");
+
+    for (int i = 2; i < 6; ++i)
+        mLoggers[(Level)i] = &defaultLog;
 }
 
 Logger::~Logger()
 {
+
+}
+
+void Logger::init()
+{
+    if (mVerbose)
+        for (int i = 0; i < 2; ++i)
+            mLoggers[(Level)i] = &defaultLog;
+    mLoggers[Fatal] = [](const Message& msg) { throw std::runtime_error("FATAL ERROR\n" + msg.message); };
 
 }
 
