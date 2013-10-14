@@ -26,7 +26,7 @@ bool GameState::load()
             {
             case 0:
                 mWorld.init();
-                mWorld.setSize(sf::Vector2f(812, 1000));
+                mWorld.setSize(sf::Vector2f(1600, 1000));
                 break;
 
             case 1:

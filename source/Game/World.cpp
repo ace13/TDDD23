@@ -1,14 +1,20 @@
 #include "World.hpp"
 #include "Planet.hpp"
 #include "Ship.hpp"
-#include "../Config.hpp"
 
 #include <Box2D/Box2D.h>
 #include <random>
 
+#ifdef DEBUG
+#include "../Debug/DebugDraw.hpp"
+#endif
+
 using namespace Game;
 
 World::World() : mBox2DWorld(nullptr)
+#ifdef DEBUG
+    , mDebugDraw(nullptr)
+#endif
 {
 
 }
@@ -20,6 +26,8 @@ World::~World()
 
     if (mBox2DWorld)
         delete mBox2DWorld;
+    if (mDebugDraw)
+        delete mDebugDraw;
 }
 
 void World::init()
@@ -54,7 +62,7 @@ void World::update(float dt)
     {
         FOR_EACH (auto& p, mPlanets)
         {
-            s.addGravity(p.getPosition());
+            //s.addGravity(p.getPosition());
         }
     }
 }
@@ -62,6 +70,24 @@ void World::update(float dt)
 ///\FIXME Don't draw everything always.
 void World::draw(sf::RenderTarget& target)
 {
+#ifdef DEBUG
+    if (!mDebugDraw)
+    {
+        puts("DEBUG");
+        uint32 flags = b2Draw::e_shapeBit;
+        //flags += b2Draw::e_jointBit;
+        //flags += b2Draw::e_aabbBit;
+        //flags += b2Draw::e_pairBit;
+        //flags += b2Draw::e_centerOfMassBit;
+
+        mDebugDraw = new DebugDraw(target);
+        mDebugDraw->SetFlags(flags);
+        mBox2DWorld->SetDebugDraw(mDebugDraw);
+    }
+
+    mBox2DWorld->DrawDebugData();
+#endif
+    return;
     FOR_EACH (auto& p, mPlanets)
     {
         p.draw(target);

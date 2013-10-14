@@ -52,7 +52,7 @@ void Planet::addedToWorld(World& world)
     {
         b2CircleShape shape;
         shape.m_p.SetZero();
-        shape.m_radius = mRadius * 10;
+        shape.m_radius = mRadius;
 
         b2FixtureDef def;
         def.density = 1;

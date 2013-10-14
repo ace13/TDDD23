@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "../Config.hpp"
 #include <vector>
 
+class b2Draw;
 class b2World;
 
 namespace Game
@@ -40,6 +42,9 @@ private:
     std::vector<Ship> mShips;
 
     b2World* mBox2DWorld;
+#ifdef DEBUG
+    b2Draw* mDebugDraw;
+#endif
 };
 
 }

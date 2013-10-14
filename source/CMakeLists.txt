@@ -12,6 +12,8 @@ include_directories(
 set(DEBUG_SOURCE
     Debug/Console.hpp
     Debug/Console.cpp
+    Debug/DebugDraw.hpp
+    Debug/DebugDraw.cpp
     Debug/TelemetryOverlay.hpp
     Debug/TelemetryOverlay.cpp
 )
