@@ -51,10 +51,8 @@ void StateManager::popState()
 
 bool StateManager::doEvent(const sf::Event& ev)
 {
-    if (ev.type == sf::Event::KeyReleased && ev.key.code == sf::Keyboard::BackSlash)
-    {
+    if (ev.type == sf::Event::KeyReleased && ev.key.code == sf::Keyboard::F3)
         mShowDebug = !mShowDebug;
-    }
 
     if (mShowDebug && mConsole->event(ev))
         return true;
@@ -65,9 +63,6 @@ bool StateManager::doEvent(const sf::Event& ev)
         if (s)
             return true;
     }
-
-    if (ev.type == sf::Event::KeyReleased && ev.key.code == sf::Keyboard::F3)
-        mShowDebug = !mShowDebug;
 
     return false;
 }
