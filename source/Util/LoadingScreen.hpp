@@ -2,6 +2,7 @@
 
 #include "../IState.hpp"
 #include <SFML/Graphics/Font.hpp>
+#include <memory>
 #include <list>
 
 class LoadingScreen : public IState
