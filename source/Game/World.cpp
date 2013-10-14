@@ -146,9 +146,11 @@ void World::addPlanet(const Planet& p)
 {
     Game::Planet tmp = p;
 
+    float radius = tmp.getRadius() * 1.5;
+
     std::random_device dev;
-    std::uniform_real_distribution<float> distX(0, mSize.x);
-    std::uniform_real_distribution<float> distY(0, mSize.y);
+    std::uniform_real_distribution<float> distX(radius, mSize.x - radius);
+    std::uniform_real_distribution<float> distY(radius, mSize.y - radius);
 
     tmp.setPosition(sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f));
     tmp.addedToWorld(*this);
@@ -161,10 +163,26 @@ void World::addShip(const Ship& s)
     Game::Ship tmp = s;
 
     std::random_device dev;
-    std::uniform_real_distribution<float> distX(0, mSize.x);
-    std::uniform_real_distribution<float> distY(0, mSize.y);
+    std::uniform_int_distribution<int> distP(0, mPlanets.size()-1);
+    std::uniform_real_distribution<float> distR(0, 360);
 
-    //tmp.setPosition(sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f));
+    int planet = distP(dev);
+    float angle = distR(dev) * (3.14159/180);
+
+    Planet* targetPlanet = nullptr;
+    unsigned int i = 0;
+    FOR_EACH(auto& p, mPlanets)
+        if (i++ == planet)
+        {
+            targetPlanet = &p;
+            break;
+        }
+
+    auto planetPos = targetPlanet->getPosition();
+    sf::Vector2f dir(cos(angle), sin(angle));
+
+    tmp.setPosition(planetPos + dir * (targetPlanet->getRadius() + 5));
+    tmp.setAngle(angle + (90 * (3.14159/180)));
     tmp.addedToWorld(*this);
 
     mShips.push_back(tmp);

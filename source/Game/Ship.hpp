@@ -18,7 +18,9 @@ public:
     ~Ship();
 
     sf::Vector2f getPosition() const;
+    void setPosition(const sf::Vector2f&);
     float getAngle() const;
+    void setAngle(float);
 
     void addedToWorld(World&);
 
@@ -28,6 +30,8 @@ public:
     void addGravity(const sf::Vector2f& pos);
 
 private:
+    sf::Vector2f mPosition;
+    float mAngle;
     Player* mPlayer;
     b2Body* mBody;
 };
