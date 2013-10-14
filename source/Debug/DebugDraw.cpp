@@ -1,6 +1,7 @@
 #include "DebugDraw.hpp"
 
 static const float RATIO = 1;
+static const float LINE_THICK = 2.f;
 
 DebugDraw::DebugDraw(sf::RenderTarget &window)
 {
@@ -22,19 +23,22 @@ sf::Color DebugDraw::B2SFColor(const b2Color &color, int alpha = 255)
 
 void DebugDraw::DrawTransform(const b2Transform& xf)
 {
-    float lineProportion;
-    lineProportion = 0.15; // 0.15 ~ 10 pixels
-    b2Vec2 p1 = xf.p, p2;
+    sf::Vector2f origin(xf.p.x, xf.p.y);
+    auto xa = xf.q.GetXAxis();
+    auto ya = xf.q.GetYAxis();
 
-    p2 = p1 + (lineProportion * xf.q.GetXAxis());
-    DrawLine(sf::Vector2f(p1.x * RATIO, p1.y * RATIO), sf::Vector2f(p2.x * RATIO, p2.y * RATIO), 1, sf::Color::Red);
-    p2 = p1 - (lineProportion * xf.q.GetYAxis());
-    DrawLine(sf::Vector2f(p1.x * RATIO, p1.y * RATIO), sf::Vector2f(p2.x * RATIO, p2.y * RATIO), 1, sf::Color::Green);
+    sf::Vector2f xAxis(xa.x, xa.y);
+    sf::Vector2f yAxis(ya.x, ya.y);
+
+    sf::Vector2f p2 = origin + xAxis * 5.f;
+    DrawLine(origin * RATIO, p2 * RATIO, LINE_THICK, sf::Color::Red);
+    p2 = origin - yAxis * 5.f;
+    DrawLine(origin * RATIO, p2 * RATIO, LINE_THICK, sf::Color::Green);
 }
 
 void DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color)
 {
-    DrawLine(sf::Vector2f(p1.x, p1.y), sf::Vector2f(p2.x, p2.y), 1.f, B2SFColor(color));
+    DrawLine(sf::Vector2f(p1.x, p1.y), sf::Vector2f(p2.x, p2.y), LINE_THICK, B2SFColor(color));
 }
 
 void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color)
@@ -43,7 +47,7 @@ void DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Ve
     
     circle.setOrigin(radius * RATIO, radius * RATIO);
     circle.setOutlineColor(B2SFColor(color));
-    circle.setOutlineThickness(1);
+    circle.setOutlineThickness(LINE_THICK);
     circle.setFillColor(B2SFColor(color, 50));
     circle.setPosition(center.x * RATIO, center.y * RATIO);
 
@@ -58,7 +62,7 @@ void DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color& 
 
     circle.setOrigin(radius * RATIO, radius * RATIO);
     circle.setOutlineColor(B2SFColor(color));
-    circle.setOutlineThickness(1);
+    circle.setOutlineThickness(LINE_THICK);
     circle.setFillColor(sf::Color::Transparent);
     circle.setPosition(center.x * RATIO, center.y * RATIO);
 
@@ -75,7 +79,7 @@ void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, cons
     }
     polygon.setFillColor(B2SFColor(color,50));
     polygon.setOutlineColor(B2SFColor(color));
-    polygon.setOutlineThickness(1.f);
+    polygon.setOutlineThickness(LINE_THICK);
     this->window->draw(polygon);
 
 }
@@ -90,7 +94,7 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
     }
     polygon.setFillColor(sf::Color::Transparent);
     polygon.setOutlineColor(B2SFColor(color));
-    polygon.setOutlineThickness(1.f);
+    polygon.setOutlineThickness(LINE_THICK);
     this->window->draw(polygon);
 
 }
@@ -103,7 +107,7 @@ void DebugDraw::DrawLine(const sf::Vector2f& p1, const sf::Vector2f& p2, float t
     sf::RectangleShape line(sf::Vector2f(distance, thick));
     line.setOrigin(0, thick/2.f);
     line.setPosition(p1);
-    line.setRotation(atan2(dir.y, dir.x * (180/3.14159f)));
+    line.setRotation(atan2(dir.y, dir.x) * (180/3.14159f));
     line.setFillColor(c);
 
     window->draw(line);

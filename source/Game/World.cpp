@@ -13,10 +13,9 @@ using namespace Game;
 
 World::World() : mBox2DWorld(nullptr)
 #ifdef DEBUG
-    , mDebugDraw(nullptr)
+    , mDebugDraw(nullptr), mDebugTarget(nullptr)
 #endif
 {
-
 }
 
 World::~World()
@@ -26,8 +25,12 @@ World::~World()
 
     if (mBox2DWorld)
         delete mBox2DWorld;
+#ifdef DEBUG
     if (mDebugDraw)
         delete mDebugDraw;
+    if (mDebugTarget)
+        delete mDebugTarget;
+#endif
 }
 
 void World::init()
@@ -43,8 +46,8 @@ void World::update(float dt)
     if (!mBox2DWorld)
         return;
 
-    static int velocitySteps = 8;
-    static int positionSteps = 4;
+    static int velocitySteps = 10;
+    static int positionSteps = 5;
 
     mBox2DWorld->Step(dt, velocitySteps, positionSteps); ///\TODO Maybe check if this needs to be more or less static anywho
 
@@ -66,7 +69,7 @@ void World::update(float dt)
     {
         FOR_EACH (auto& p, mPlanets)
         {
-            if (dist(s.getPosition(), p.getPosition()) < 256*256)
+            if (sqrt(dist(s.getPosition(), p.getPosition())) < (p.getRadius() * 4))
                 s.addGravity(p.getPosition());
         }
     }
@@ -76,17 +79,38 @@ void World::update(float dt)
 void World::draw(sf::RenderTarget& target)
 {
 #ifdef DEBUG
+    auto& view = target.getView();
+    if (!mDebugTarget)
+    {
+        float aspect = view.getSize().y / view.getSize().x;
+
+        mDebugTarget = new sf::RenderTexture();
+        mDebugTarget->create(512 * aspect, 512);
+        
+    }
+    mDebugTarget->setSmooth(true);
+
     if (!mDebugDraw)
     {
-        uint32 flags = (b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_shapeBit);
+        uint32 flags = b2Draw::e_shapeBit; //(b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_shapeBit);
 
-        mDebugDraw = new DebugDraw(target);
+        mDebugDraw = new DebugDraw(*mDebugTarget);
         mDebugDraw->SetFlags(flags);
         mBox2DWorld->SetDebugDraw(mDebugDraw);
     }
 
+    mDebugTarget->setView(view);
+    mDebugTarget->clear();
+    sf::RectangleShape world(mSize);
+    world.setFillColor(sf::Color::Transparent);
+    world.setOutlineColor(sf::Color::Red);
+    world.setOutlineThickness(5.f);
+    world.setOrigin(mSize/2.f);
+    mDebugTarget->draw(world);
     mBox2DWorld->DrawDebugData();
-#else
+    mDebugTarget->display();
+#endif
+//#else
     FOR_EACH (auto& p, mPlanets)
     {
         p.draw(target);
@@ -96,6 +120,25 @@ void World::draw(sf::RenderTarget& target)
     {
         s.draw(target);
     }
+//#endif
+}
+
+void World::drawUi(sf::RenderTarget& target)
+{
+#ifdef DEBUG
+    sf::RectangleShape debugSprite;
+    sf::Vector2f realSize = (sf::Vector2f)mDebugTarget->getSize();
+    float aspect = realSize.y / realSize.x;
+    sf::Vector2f targetSize(128 * aspect, 128);
+    auto size = target.getSize();
+
+    debugSprite.setPosition(size.x - 128 * aspect - 1, size.y - 129);
+    debugSprite.setSize(targetSize);
+    debugSprite.setTexture(&mDebugTarget->getTexture());
+    debugSprite.setOutlineColor(sf::Color::White);
+    debugSprite.setOutlineThickness(1.f);
+
+    target.draw(debugSprite);
 #endif
 }
 

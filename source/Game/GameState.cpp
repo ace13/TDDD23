@@ -108,6 +108,22 @@ bool GameState::event(const sf::Event& ev)
     }
     else if (ev.type == sf::Event::MouseButtonReleased && ev.mouseButton.button == sf::Mouse::Left)
         mMouseDrag = false;
+    else if (ev.type == sf::Event::MouseWheelMoved)
+    {
+        static float zoomFactor = 5.f;
+        int delta = -ev.mouseWheel.delta;
+
+        sf::Vector2f curMouse = getApplication().getMouse();
+        sf::View& gameView = getApplication().getGameView();
+
+        sf::Vector2f diff = gameView.getCenter() - curMouse;
+        if (delta < 0)
+            diff = -diff;
+
+        gameView.move(diff/zoomFactor);
+        
+        gameView.zoom(1 + delta / zoomFactor);
+    }
 
     return false;
 }
@@ -132,5 +148,5 @@ void GameState::draw(sf::RenderTarget& target)
 }
 void GameState::drawUi(sf::RenderTarget& target)
 {
-
+    mWorld.drawUi(target);
 }

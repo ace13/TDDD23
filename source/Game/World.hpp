@@ -4,6 +4,8 @@
 #include "../Config.hpp"
 #include <vector>
 
+namespace sf { class RenderTexture; }
+
 class b2Draw;
 class b2World;
 
@@ -26,6 +28,7 @@ public:
     void addShip(const Ship& ship);
 
     void draw(sf::RenderTarget& target);
+    void drawUi(sf::RenderTarget& target);
 
     inline sf::Vector2f getSize() const { return mSize; }
     inline void setSize(sf::Vector2f size) { mSize = size; }
@@ -44,6 +47,7 @@ private:
     b2World* mBox2DWorld;
 #ifdef DEBUG
     b2Draw* mDebugDraw;
+    sf::RenderTexture* mDebugTarget;
 #endif
 };
 
