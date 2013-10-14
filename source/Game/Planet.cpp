@@ -13,7 +13,7 @@ Planet::Planet() :
     mDirty(false), mRadius(0), mBody(nullptr)
 {
     std::random_device dev;
-    std::uniform_real_distribution<float> dist(100, 500);
+    std::uniform_real_distribution<float> dist(50, 80);
     
     mRadius = dist(dev);
     mPosition = sf::Vector2f(dist(dev), dist(dev));
@@ -21,9 +21,6 @@ Planet::Planet() :
 
 Planet::~Planet()
 {
-    if (mBody)
-        mBody->GetWorld()->DestroyBody(mBody);
-    mBody = nullptr;
 }
 
 void Planet::addedToWorld(World& world)
@@ -82,10 +79,13 @@ float Planet::getPercentage() const
 
 void Planet::draw(sf::RenderTarget& target)
 {
+    if (!mBody)
+        return;
+
     ///\TODO Better graphics :D
     sf::CircleShape shape(mRadius, 64);
-    shape.setFillColor(sf::Color::White);
-    shape.setOutlineColor(sf::Color::Black);
+//    shape.setFillColor(sf::Color::White);
+    shape.setOutlineColor(sf::Color::Green);
     shape.setOutlineThickness(4.f);
     shape.setPosition(mPosition);
 

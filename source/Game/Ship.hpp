@@ -25,6 +25,8 @@ public:
     void update(float dt);
     void draw(sf::RenderTarget& target);
 
+    void addGravity(const sf::Vector2f& pos);
+
 private:
     Player* mPlayer;
     b2Body* mBody;

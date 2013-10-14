@@ -49,6 +49,14 @@ void World::update(float dt)
             ///\TODO Calculate if planet needs to be replaced.
         }
     }
+
+    FOR_EACH (auto& s, mShips)
+    {
+        FOR_EACH (auto& p, mPlanets)
+        {
+            s.addGravity(p.getPosition());
+        }
+    }
 }
 
 ///\FIXME Don't draw everything always.
@@ -74,11 +82,21 @@ void World::addPlanet(const Planet& p)
     std::uniform_real_distribution<float> distY(0, mSize.y);
 
     tmp.setPosition(sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f));
+    tmp.addedToWorld(*this);
 
     mPlanets.push_back(tmp);
 }
 
 void World::addShip(const Ship& s)
 {
-    mShips.push_back(s);
+    Game::Ship tmp = s;
+
+    std::random_device dev;
+    std::uniform_real_distribution<float> distX(0, mSize.x);
+    std::uniform_real_distribution<float> distY(0, mSize.y);
+
+    //tmp.setPosition(sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f));
+    tmp.addedToWorld(*this);
+
+    mShips.push_back(tmp);
 }

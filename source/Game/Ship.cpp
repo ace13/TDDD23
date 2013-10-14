@@ -1,6 +1,8 @@
 #include "Ship.hpp"
 #include "World.hpp"
 
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
 #include <Box2D/Box2D.h>
 
 using namespace Game;
@@ -41,12 +43,12 @@ void Ship::addedToWorld(World& world)
     {
         b2BodyDef def;
         def.type = b2_dynamicBody;
-        def.position.SetZero();
+        def.position.Set(400, 100);
         def.angle = 0;
         def.linearVelocity.SetZero();
         def.angularVelocity = 0;
         def.linearDamping = 0;
-        def.angularDamping = 0.01f;
+        def.angularDamping = 0;
         def.allowSleep = true;
         def.awake = true;
         def.fixedRotation = false;
@@ -63,7 +65,9 @@ void Ship::addedToWorld(World& world)
     {
         b2PolygonShape shape;
         b2Vec2 points[] = {
-            b2Vec2(0, 0)
+            b2Vec2(0, -15),
+            b2Vec2(10, 5),
+            b2Vec2(-10, 5)
         };
         shape.Set(points, sizeof(points)/sizeof(b2Vec2));
 
@@ -78,6 +82,23 @@ void Ship::addedToWorld(World& world)
     }
 }
 
+void Ship::addGravity(const sf::Vector2f& pos)
+{
+    auto calcDist = [](const sf::Vector2f& a, const sf::Vector2f& b) -> float {
+        return sqrt((a.x * b.x) + (a.y * b.y));
+    };
+    auto getUnit = [calcDist](const sf::Vector2f& vec) -> sf::Vector2f {
+        return vec / calcDist(vec, vec);
+    };
+
+    float dist = calcDist(getPosition(), pos);
+    sf::Vector2f direction = getUnit(pos - getPosition());
+
+    auto force = direction * 0.00001f;// (float)sqrt(dist);
+
+    mBody->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
+}
+
 
 void Ship::update(float dt)
 {
@@ -86,5 +107,24 @@ void Ship::update(float dt)
 
 void Ship::draw(sf::RenderTarget& target)
 {
+    if (!mBody)
+        return;
 
+    sf::ConvexShape shape(3);
+    shape.setPoint(0, sf::Vector2f(0, -15));
+    shape.setPoint(1, sf::Vector2f(10, 5));
+    shape.setPoint(2, sf::Vector2f(-10, 5));
+
+    float ang = mBody->GetAngle();
+    auto pos = mBody->GetPosition();
+    shape.setRotation(ang);
+    shape.setOrigin(sf::Vector2f(0, -10));
+    shape.setPosition(pos.x, pos.y);
+
+    //printf("Position %fx%f...\n", pos.x, pos.y);
+
+    shape.setOutlineColor(sf::Color::White);
+    shape.setOutlineThickness(2.f);
+
+    target.draw(shape);
 }

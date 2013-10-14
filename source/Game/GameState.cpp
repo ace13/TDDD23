@@ -26,7 +26,7 @@ bool GameState::load()
             {
             case 0:
                 mWorld.init();
-                mWorld.setSize(sf::Vector2f(1600, 1600));
+                mWorld.setSize(sf::Vector2f(812, 1000));
                 break;
 
             case 1:
@@ -39,7 +39,7 @@ bool GameState::load()
         loadStates["Placing planets"] = [&]() {
             static int totalPlanets = 0;
             
-            if (totalPlanets++ > 100)
+            if (totalPlanets++ > 9)
                 mLoadState = "Adding retards";
             else
             {
@@ -51,7 +51,7 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 3)
+            if (totalRetards++ > 0)
                 mLoadState = "Giving them guns";
             else
             {
@@ -63,7 +63,7 @@ bool GameState::load()
         loadStates["Giving them guns"] = [&]() {
             static int scripts = 0;
 
-            if (scripts++ > 100)
+            if (scripts++ > 0)
                 mLoadState = "Finalizing";
             else
             {
@@ -73,13 +73,13 @@ bool GameState::load()
         loadStates["Finalizing"] = [&]() { 
             static int finalizeWait = 0;
 
-            if (finalizeWait++ > 100)
+            if (finalizeWait++ > 0)
                 mLoadState = "Reticulating splines";
         };
         loadStates["Reticulating splines"] = [&]() { 
             static int noWait = 0;
 
-            if (noWait++ > 10)
+            if (noWait++ > 0)
                 mLoadState = "Done";
         };
     }
