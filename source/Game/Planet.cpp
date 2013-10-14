@@ -58,7 +58,7 @@ void Planet::addedToWorld(World& world)
         def.density = 1;
         def.isSensor = false;
         def.friction = 1;
-        def.restitution = 0.01f;
+        def.restitution = 0;
         def.shape = &shape;
 
         auto fix = body.CreateFixture(&def);
@@ -87,14 +87,14 @@ void Planet::draw(sf::RenderTarget& target)
     shape.setPosition(mPosition);
     shape.setFillColor(sf::Color(0,0,255,50));
     shape.setOrigin(mRadius*4, mRadius*4);
-    shape.setOutlineColor(sf::Color::Green);
-    shape.setOutlineThickness(1.f);
 
     target.draw(shape);
 
     shape.setFillColor(sf::Color(0,255,0,50));
-    shape.setRadius(mRadius);
-    shape.setOrigin(mRadius, mRadius);
+    shape.setOutlineColor(sf::Color::Green);
+    shape.setOutlineThickness(1.f);
+    shape.setRadius(mRadius-1.f);
+    shape.setOrigin(mRadius-1.f, mRadius-1.f);
 
     target.draw(shape);
 }
