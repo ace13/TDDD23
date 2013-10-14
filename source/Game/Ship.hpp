@@ -27,7 +27,7 @@ public:
     void update(float dt);
     void draw(sf::RenderTarget& target);
 
-    void addGravity(const sf::Vector2f& pos);
+    void addGravity(const sf::Vector2f& pos, float strength);
 
 private:
     sf::Vector2f mPosition;

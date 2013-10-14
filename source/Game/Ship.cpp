@@ -99,7 +99,7 @@ void Ship::setAngle(float ang)
     }
 }
 
-void Ship::addGravity(const sf::Vector2f& pos)
+void Ship::addGravity(const sf::Vector2f& pos, float strength)
 {
     auto dotProd = [](const sf::Vector2f& p) -> float {
         return (p.x*p.x) + (p.y*p.y);
@@ -112,7 +112,7 @@ void Ship::addGravity(const sf::Vector2f& pos)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f delta = (getPosition() - pos) / dist;
+    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength;
 
     mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }

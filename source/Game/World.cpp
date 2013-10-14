@@ -69,8 +69,9 @@ void World::update(float dt)
     {
         FOR_EACH (auto& p, mPlanets)
         {
-            if (sqrt(dist(s.getPosition(), p.getPosition())) < (p.getRadius() * 4))
-                s.addGravity(p.getPosition());
+            float distance = sqrt(dist(s.getPosition(), p.getPosition()));
+            if (distance < (p.getRadius() * 4))
+                s.addGravity(p.getPosition(), 1-(distance / (p.getRadius() * 4)));
         }
     }
 }
