@@ -84,17 +84,20 @@ void Ship::addedToWorld(World& world)
 
 void Ship::addGravity(const sf::Vector2f& pos)
 {
-    auto calcDist = [](const sf::Vector2f& a, const sf::Vector2f& b) -> float {
-        return sqrt((a.x * b.x) + (a.y * b.y));
+    auto dotProd = [](const sf::Vector2f& p) -> float {
+        return (p.x*p.x) + (p.y*p.y);
     };
-    auto getUnit = [calcDist](const sf::Vector2f& vec) -> sf::Vector2f {
-        return vec / calcDist(vec, vec);
+    auto calcDist = [dotProd](const sf::Vector2f& a, const sf::Vector2f& b) -> float {
+        return sqrt(dotProd(b-a));
+    };
+    auto getUnit = [dotProd](const sf::Vector2f& vec) -> sf::Vector2f {
+        return vec / sqrt(dotProd(vec));
     };
 
     float dist = calcDist(getPosition(), pos);
     sf::Vector2f direction = getUnit(pos - getPosition());
 
-    auto force = direction * (float)sqrt(dist);
+    auto force = direction;// * (float)sqrt(dist);
 
     mBody->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
 }

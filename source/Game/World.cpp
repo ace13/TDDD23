@@ -58,11 +58,16 @@ void World::update(float dt)
         }
     }
 
+    auto dist = [](const sf::Vector2f& a, const sf::Vector2f& b) -> float {
+        return ((b.x-a.x)*(b.x-a.x))+((b.y-a.y)*(b.y-a.y));
+    };
+
     FOR_EACH (auto& s, mShips)
     {
         FOR_EACH (auto& p, mPlanets)
         {
-            //s.addGravity(p.getPosition());
+            if (dist(s.getPosition(), p.getPosition()) < 256*256)
+                s.addGravity(p.getPosition());
         }
     }
 }
@@ -73,12 +78,7 @@ void World::draw(sf::RenderTarget& target)
 #ifdef DEBUG
     if (!mDebugDraw)
     {
-        puts("DEBUG");
-        uint32 flags = b2Draw::e_shapeBit;
-        //flags += b2Draw::e_jointBit;
-        //flags += b2Draw::e_aabbBit;
-        //flags += b2Draw::e_pairBit;
-        //flags += b2Draw::e_centerOfMassBit;
+        uint32 flags = (b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_shapeBit);
 
         mDebugDraw = new DebugDraw(target);
         mDebugDraw->SetFlags(flags);
@@ -86,8 +86,7 @@ void World::draw(sf::RenderTarget& target)
     }
 
     mBox2DWorld->DrawDebugData();
-#endif
-    return;
+#else
     FOR_EACH (auto& p, mPlanets)
     {
         p.draw(target);
@@ -97,6 +96,7 @@ void World::draw(sf::RenderTarget& target)
     {
         s.draw(target);
     }
+#endif
 }
 
 void World::addPlanet(const Planet& p)
