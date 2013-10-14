@@ -55,7 +55,7 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 0)
+            if (totalRetards++ > 9)
                 mLoadState = "Giving them guns";
             else
             {
