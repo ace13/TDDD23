@@ -65,6 +65,9 @@ public:
     void set(const std::string& name, const T&) const;
 
 private:
+    Options(const Options&);
+    Options& operator=(const Options&);
+
     Application& mApp;
     std::unordered_map<std::string, CVAR> mStored;
 };
@@ -77,7 +80,7 @@ void Options::registerVariable(T& t, const std::string& name, const std::string&
     cv.Name = name;
     cv.Description = desc;
     cv.Type = typeid(T);
-    
+
     cv.Set = new std::function<void(const T& val)>([&](const T& val) { t = val; });
     cv.Get = new std::function<T()>([&]() { return t; });
 

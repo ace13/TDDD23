@@ -104,7 +104,8 @@ void Options::parseARGV(int argc, char** argv)
                 mApp.getLogger().log("Option '%s' requires an argument, skipping.", Logger::Warning, cv.Name.c_str());
             else
             {
-                auto set = *(std::function<void(const bool&)>*)cv.Set;
+                auto set = *reinterpret_cast<std::function<void(const bool&)>*>(cv.Set);
+
                 set(true);
             }
         }
