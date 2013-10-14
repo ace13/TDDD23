@@ -19,6 +19,9 @@ public:
     void drawUi(sf::RenderTarget& target);
 
 private:
+    bool mMouseDrag;
+    sf::Vector2f mLastMouse;
+
     std::string mLoadState;
     Game::World mWorld;
 };

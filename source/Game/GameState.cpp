@@ -1,12 +1,16 @@
 #include "GameState.hpp"
 #include "Planet.hpp"
 #include "Ship.hpp"
+#include "../Application.hpp"
+
+#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 
 #include <unordered_map>
 #include <functional>
 #include <string>
 
-GameState::GameState() : mLoadState("Creating the universe")
+GameState::GameState() : mMouseDrag(false), mLoadState("Creating the universe")
 {
 
 }
@@ -97,10 +101,29 @@ void GameState::unload()
 
 bool GameState::event(const sf::Event& ev)
 {
+    if (ev.type == sf::Event::MouseButtonPressed && ev.mouseButton.button == sf::Mouse::Left)
+    {
+        mMouseDrag = true;
+        mLastMouse = getApplication().getMouse();
+    }
+    else if (ev.type == sf::Event::MouseButtonReleased && ev.mouseButton.button == sf::Mouse::Left)
+        mMouseDrag = false;
+
     return false;
 }
 void GameState::update(float dt)
 {
+    if (mMouseDrag)
+    {
+        sf::Vector2f curMouse = getApplication().getMouse();
+
+        sf::Vector2f diff = mLastMouse - curMouse;
+        curMouse += diff;
+        
+        getApplication().getGameView().move(diff);
+        mLastMouse = curMouse;
+    }
+
     mWorld.update(dt);
 }
 void GameState::draw(sf::RenderTarget& target)
