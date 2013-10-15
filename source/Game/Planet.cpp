@@ -106,7 +106,7 @@ void Planet::drawWell(sf::RenderTarget& target)
     auto& view = target.getView();
     auto pos = (sf::Vector2f)target.mapCoordsToPixel(mPosition);
 
-    tone.setParameter("size", view.getSize());
+    tone.setParameter("sizeDiff", target.getSize().y / view.getSize().y);
     tone.setParameter("center", pos.x, target.getSize().y - pos.y, mRadius*4, mRadius);
     tone.setParameter("color", sf::Color(0,0,255,255));
 
