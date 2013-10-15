@@ -3,7 +3,7 @@ uniform vec2 size;
 uniform vec4 color;
 
 void main() {
-	float diff = 1500.0 / length(size);
+    float diff = 1100.0 / size.y;
     float distance = distance(gl_FragCoord.xy, center.xy);
 
     if (distance > diff*center.w)
