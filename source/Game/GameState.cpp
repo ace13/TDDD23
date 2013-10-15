@@ -43,7 +43,7 @@ bool GameState::load()
         loadStates["Placing planets"] = [&]() {
             static int totalPlanets = 0;
             
-            if (totalPlanets++ > 9)
+            if (totalPlanets++ > 99)
                 mLoadState = "Adding retards";
             else
             {

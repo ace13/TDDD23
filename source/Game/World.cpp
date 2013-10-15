@@ -154,7 +154,29 @@ void World::addPlanet(const Planet& p)
     std::uniform_real_distribution<float> distX(radius, mSize.x - radius);
     std::uniform_real_distribution<float> distY(radius, mSize.y - radius);
 
-    tmp.setPosition(sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f));
+    sf::Vector2f pos;
+    struct : public b2QueryCallback {
+        bool occupied;
+        bool ReportFixture(b2Fixture*) { occupied = true; return false; }
+    } occupyCheck;
+
+    unsigned int attempts = 0;
+
+    do
+    {
+        occupyCheck.occupied = false;
+        pos = sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f);
+
+        b2AABB aabb;
+        aabb.lowerBound.Set(pos.x-radius, pos.y-radius);
+        aabb.upperBound.Set(pos.x+radius, pos.y+radius);
+        mBox2DWorld->QueryAABB(&occupyCheck, aabb);
+    } while (occupyCheck.occupied && attempts++ < 100);
+
+    if (occupyCheck.occupied)
+        return;
+
+    tmp.setPosition(pos);
     tmp.addedToWorld(*this);
 
     mPlanets.push_back(tmp);

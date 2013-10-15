@@ -59,9 +59,9 @@ void Planet::addedToWorld(World& world)
         shape.m_radius = mRadius;
 
         b2FixtureDef def;
-        def.density = 1;
+        def.density = 1.f;
         def.isSensor = false;
-        def.friction = 1;
+        def.friction = 1.f;
         def.restitution = 0;
         def.shape = &shape;
 

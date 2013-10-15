@@ -73,10 +73,10 @@ void Ship::addedToWorld(World& world)
         shape.Set(points, sizeof(points)/sizeof(b2Vec2));
 
         b2FixtureDef def;
-        def.density = 1;
+        def.density = 1.f;
         def.isSensor = false;
         def.friction = 0.25f;
-        def.restitution = 0;
+        def.restitution = 0.f;
         def.shape = &shape;
 
         auto fix = body.CreateFixture(&def);
