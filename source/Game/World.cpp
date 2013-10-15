@@ -13,9 +13,13 @@ using namespace Game;
 
 World::World() : mBox2DWorld(nullptr)
 #ifdef DEBUG
-    , mDebugDraw(nullptr), mDebugTarget(nullptr)
+    , mDebugDraw(nullptr), mDebugTarget(new sf::RenderTexture())
 #endif
 {
+#ifdef DEBUG
+    mDebugTarget->create(512, 512);
+    mDebugTarget->setSmooth(true);
+#endif
 }
 
 World::~World()
@@ -71,7 +75,7 @@ void World::update(float dt)
         {
             float distance = sqrt(dist(s.getPosition(), p.getPosition()));
             if (distance < (p.getRadius() * 4))
-                s.addGravity(p.getPosition(), 1-(distance / (p.getRadius() * 4)));
+                s.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
         }
     }
 }
@@ -80,16 +84,8 @@ void World::update(float dt)
 void World::draw(sf::RenderTarget& target)
 {
 #ifdef DEBUG
-    auto& view = target.getView();
-    if (!mDebugTarget)
-    {
-        float aspect = view.getSize().y / view.getSize().x;
-
-        mDebugTarget = new sf::RenderTexture();
-        mDebugTarget->create(512 * aspect, 512);
-        
-    }
-    mDebugTarget->setSmooth(true);
+    auto view = target.getView();
+    view.setSize(view.getSize().y, view.getSize().y);
 
     if (!mDebugDraw)
     {
@@ -102,38 +98,43 @@ void World::draw(sf::RenderTarget& target)
 
     mDebugTarget->setView(view);
     mDebugTarget->clear();
+
     sf::RectangleShape world(mSize);
     world.setFillColor(sf::Color::Transparent);
     world.setOutlineColor(sf::Color::Red);
     world.setOutlineThickness(5.f);
     world.setOrigin(mSize/2.f);
     mDebugTarget->draw(world);
+
     mBox2DWorld->DrawDebugData();
+
     mDebugTarget->display();
 #endif
-//#else
+
+    FOR_EACH (auto& p, mPlanets)
+    {
+        p.drawWell(target);
+    }
+
     FOR_EACH (auto& p, mPlanets)
     {
         p.draw(target);
     }
 
-    FOR_EACH(auto& s, mShips)
+    FOR_EACH (auto& s, mShips)
     {
         s.draw(target);
     }
-//#endif
 }
 
 void World::drawUi(sf::RenderTarget& target)
 {
 #ifdef DEBUG
     sf::RectangleShape debugSprite;
-    sf::Vector2f realSize = (sf::Vector2f)mDebugTarget->getSize();
-    float aspect = realSize.y / realSize.x;
-    sf::Vector2f targetSize(128 * aspect, 128);
+    sf::Vector2f targetSize(128, 128);
     auto size = target.getSize();
 
-    debugSprite.setPosition(size.x - 128 * aspect - 1, size.y - 129);
+    debugSprite.setPosition(size.x - targetSize.x - 1, size.y - targetSize.y - 1);
     debugSprite.setSize(targetSize);
     debugSprite.setTexture(&mDebugTarget->getTexture());
     debugSprite.setOutlineColor(sf::Color::White);
@@ -168,11 +169,11 @@ void World::addShip(const Ship& s)
     std::uniform_real_distribution<float> distR(0, 360);
 
     int planet = distP(dev);
-    float angle = distR(dev) * (3.14159/180);
+    float angle = distR(dev) * (M_PI/180);
 
     Planet* targetPlanet = nullptr;
     unsigned int i = 0;
-    FOR_EACH(auto& p, mPlanets)
+    FOR_EACH (auto& p, mPlanets)
         if (i++ == planet)
         {
             targetPlanet = &p;
@@ -183,7 +184,7 @@ void World::addShip(const Ship& s)
     sf::Vector2f dir(cos(angle), sin(angle));
 
     tmp.setPosition(planetPos + dir * (targetPlanet->getRadius() + 5));
-    tmp.setAngle(angle + (90 * (3.14159/180)));
+    tmp.setAngle(angle + (90 * (M_PI/180)));
     tmp.addedToWorld(*this);
 
     mShips.push_back(tmp);

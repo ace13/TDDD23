@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Entity.hpp"
+#include <memory>
 
-namespace sf { class RenderTarget; }
+namespace sf { class RenderTarget; class Shader; }
 
 class b2Body;
 
@@ -29,12 +30,15 @@ public:
     
     void update(float) { }
     void draw(sf::RenderTarget& target);
+    void drawWell(sf::RenderTarget& target);
 
 private:
     bool mDirty;
     float mRadius;
     sf::Vector2f mPosition;
     b2Body* mBody;
+
+    std::shared_ptr<sf::Shader> mWellShader;
 };
 
 }

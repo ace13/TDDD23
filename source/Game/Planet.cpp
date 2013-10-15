@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Shader.hpp>
 #include <random>
 
 #include <Box2D/Box2D.h>
@@ -17,6 +18,9 @@ Planet::Planet() :
     
     mRadius = dist(dev);
     mPosition = sf::Vector2f(dist(dev), dist(dev));
+
+    mWellShader = std::make_shared<sf::Shader>();
+    mWellShader->loadFromFile("well.frag", sf::Shader::Fragment);
 }
 
 Planet::~Planet()
@@ -79,22 +83,32 @@ float Planet::getPercentage() const
 
 void Planet::draw(sf::RenderTarget& target)
 {
-    if (!mBody)
-        return;
-
     ///\TODO Better graphics :D
-    sf::CircleShape shape(mRadius*4, 64);
+    
+    sf::CircleShape shape(mRadius - 1.f);
     shape.setPosition(mPosition);
-    shape.setFillColor(sf::Color(0,0,255,50));
-    shape.setOrigin(mRadius*4, mRadius*4);
-
-    target.draw(shape);
-
-    shape.setFillColor(sf::Color(0,255,0,50));
+    shape.setFillColor(sf::Color(0,50,0,255));
     shape.setOutlineColor(sf::Color::Green);
     shape.setOutlineThickness(1.f);
-    shape.setRadius(mRadius-1.f);
     shape.setOrigin(mRadius-1.f, mRadius-1.f);
 
     target.draw(shape);
+}
+
+void Planet::drawWell(sf::RenderTarget& target)
+{
+    sf::CircleShape shape(mRadius*4, 64);
+    shape.setPosition(mPosition);
+    shape.setFillColor(sf::Color::Transparent);
+    shape.setOrigin(mRadius*4, mRadius*4);
+    
+    auto& tone = *mWellShader;
+    auto& view = target.getView();
+    auto pos = (sf::Vector2f)target.mapCoordsToPixel(mPosition);
+
+    tone.setParameter("size", view.getSize());
+    tone.setParameter("center", pos.x, target.getSize().y - pos.y, mRadius*4, mRadius);
+    tone.setParameter("color", sf::Color(0,0,255,255));
+
+    target.draw(shape, &tone);
 }
