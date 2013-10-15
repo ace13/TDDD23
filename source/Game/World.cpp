@@ -11,11 +11,14 @@
 
 using namespace Game;
 
-World::World() : mBox2DWorld(nullptr), mWalls({nullptr, nullptr, nullptr, nullptr})
+World::World() : mBox2DWorld(nullptr)
 #ifdef DEBUG
     , mDebugDraw(nullptr), mDebugTarget(new sf::RenderTexture())
 #endif
 {
+    for (int i = 0; i < 4; ++i)
+        mWalls[i] = nullptr;
+
 #ifdef DEBUG
     mDebugTarget->create(512, 512);
     mDebugTarget->setSmooth(true);
@@ -84,7 +87,9 @@ void World::updateWalls()
 {
     if (mWalls[0] != nullptr)
         for (int i = 0; i < 4; ++i)
-            delete mWalls[i];
+        {
+            mBox2DWorld->DestroyBody(mWalls[i]);
+        }
 
     
 }
