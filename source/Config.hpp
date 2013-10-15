@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #if defined(_WIN32)
 #define WINDOWS
 #elif defined(__LINUX__)
@@ -16,3 +18,5 @@
 #else
 #define FOR_EACH(a, b) for (a : b)
 #endif
+
+static const float M_PI = 4.f * atan(1.f);
