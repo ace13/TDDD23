@@ -11,7 +11,7 @@
 
 using namespace Game;
 
-World::World() : mBox2DWorld(nullptr)
+World::World() : mBox2DWorld(nullptr), mWalls({nullptr, nullptr, nullptr, nullptr})
 #ifdef DEBUG
     , mDebugDraw(nullptr), mDebugTarget(new sf::RenderTexture())
 #endif
@@ -78,6 +78,15 @@ void World::update(float dt)
                 s.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
         }
     }
+}
+
+void World::updateWalls()
+{
+    if (mWalls[0] != nullptr)
+        for (int i = 0; i < 4; ++i)
+            delete mWalls[i];
+
+    
 }
 
 ///\FIXME Don't draw everything always.

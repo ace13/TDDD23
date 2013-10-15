@@ -34,6 +34,7 @@ bool GameState::load()
                 break;
 
             case 1:
+                mWorld.updateWalls();
                 break;
 
             default:
@@ -43,7 +44,7 @@ bool GameState::load()
         loadStates["Placing planets"] = [&]() {
             static int totalPlanets = 0;
             
-            if (totalPlanets++ > 99)
+            if (totalPlanets++ > 9)
                 mLoadState = "Adding retards";
             else
             {

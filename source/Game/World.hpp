@@ -7,6 +7,7 @@
 namespace sf { class RenderTexture; }
 
 class b2Draw;
+class b2Body;
 class b2World;
 
 namespace Game
@@ -23,6 +24,7 @@ public:
 
     void init();
     void update(float dt);
+    void updateWalls();
 
     void addPlanet(const Planet& planet);
     void addShip(const Ship& ship);
@@ -44,6 +46,7 @@ private:
     std::vector<Planet> mPlanets;
     std::vector<Ship> mShips;
 
+    b2Body* mWalls[4];
     b2World* mBox2DWorld;
 #ifdef DEBUG
     b2Draw* mDebugDraw;
