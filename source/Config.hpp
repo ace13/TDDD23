@@ -19,4 +19,6 @@
 #define FOR_EACH(a, b) for (a : b)
 #endif
 
+#ifndef M_PI
 static const float M_PI = 4.f * atan(1.f);
+#endif
