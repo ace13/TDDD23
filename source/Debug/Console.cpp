@@ -51,7 +51,8 @@ bool Console::event(const sf::Event& ev)
             switch(letter)
             {
             case '\b':
-                mCurrentLine = mCurrentLine.erase(mCurrentLine.length()-1, 1);
+                if (!mCurrentLine.empty())
+                    mCurrentLine = mCurrentLine.erase(mCurrentLine.length()-1, 1);
                 break;
 
             case 13:
