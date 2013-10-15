@@ -1,5 +1,6 @@
 #include "Ship.hpp"
 #include "World.hpp"
+#include "../Config.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
@@ -74,7 +75,7 @@ void Ship::addedToWorld(World& world)
         b2FixtureDef def;
         def.density = 1;
         def.isSensor = false;
-        def.friction = 1;
+        def.friction = 0.25f;
         def.restitution = 0;
         def.shape = &shape;
 
@@ -135,7 +136,7 @@ void Ship::draw(sf::RenderTarget& target)
 
     float ang = mBody->GetAngle();
     auto pos = mBody->GetPosition();
-    shape.setRotation(ang * (180/3.14159));
+    shape.setRotation(ang * (180/M_PI));
     shape.setOrigin(sf::Vector2f(0, 0));
     shape.setPosition(pos.x, pos.y);
 

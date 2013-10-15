@@ -30,7 +30,7 @@ bool GameState::load()
             {
             case 0:
                 mWorld.init();
-                mWorld.setSize(sf::Vector2f(1600, 1000));
+                mWorld.setSize(sf::Vector2f(2048, 2048));
                 break;
 
             case 1:
@@ -55,7 +55,7 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 9)
+            if (totalRetards++ > 4)
                 mLoadState = "Giving them guns";
             else
             {
