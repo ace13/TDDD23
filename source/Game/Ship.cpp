@@ -109,7 +109,7 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
         return sqrt(dotProd(b-a));
     };
     auto getUnit = [dotProd](const sf::Vector2f& vec) -> sf::Vector2f {
-        return vec / sqrt(dotProd(vec));
+        return vec / (float)sqrt(dotProd(vec));
     };
 
     float dist = calcDist(getPosition(), pos);
