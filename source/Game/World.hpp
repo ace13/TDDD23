@@ -2,6 +2,7 @@
 
 #include "Entity.hpp"
 #include "../Config.hpp"
+#include <SFML/Graphics/Rect.hpp>
 #include <vector>
 
 namespace sf { class RenderTexture; }
@@ -37,6 +38,9 @@ public:
 
     inline b2World* getBox2D() { return mBox2DWorld; }
 
+    inline const std::vector<Planet>& getPlanets() { return mPlanets; }
+    inline const std::vector<Ship>& getShips() { return mShips; }
+
 private:
     World(const World&);
     World& operator=(const World& other);
@@ -45,6 +49,7 @@ private:
 
     std::vector<Planet> mPlanets;
     std::vector<Ship> mShips;
+    sf::FloatRect mCameraRect;
 
     b2Body* mWalls[4];
     b2World* mBox2DWorld;

@@ -125,6 +125,11 @@ void World::draw(sf::RenderTarget& target)
     mDebugTarget->display();
 #endif
 
+    mCameraRect.width = target.getView().getSize().x;
+    mCameraRect.height = target.getView().getSize().y;
+    mCameraRect.left = target.getView().getCenter().x - mCameraRect.width  / 2.f;
+    mCameraRect.top  = target.getView().getCenter().y - mCameraRect.height / 2.f;
+
     FOR_EACH (auto& p, mPlanets)
     {
         p.drawWell(target);
@@ -156,6 +161,36 @@ void World::drawUi(sf::RenderTarget& target)
 
     target.draw(debugSprite);
 #endif
+
+    sf::FloatRect ship;
+
+    sf::ConvexShape arrow(3);
+    arrow.setPoint(0, sf::Vector2f( 0, -10));
+    arrow.setPoint(1, sf::Vector2f( 5,  0));
+    arrow.setPoint(2, sf::Vector2f(-5,  0));
+    arrow.setOrigin(0, -5);
+
+    auto& cCent = target.getView().getCenter();
+    sf::Vector2f wCent(mCameraRect.left + mCameraRect.width / 2, mCameraRect.top + mCameraRect.height / 2);
+    arrow.setPosition(cCent);
+
+    FOR_EACH(auto& s, mShips)
+    {
+        ship = sf::FloatRect(s.getPosition(), sf::Vector2f(10, 10));
+        ship.left -= ship.width  / 2.f;
+        ship.top  -= ship.height / 2.f;
+
+        if (!mCameraRect.intersects(ship))
+        {
+            float dir = atan2(s.getPosition().y - wCent.y, s.getPosition().x - wCent.x);
+            float distance = target.getSize().y / 2.f - 25;
+
+            arrow.setRotation(dir * (180/M_PI) + 90);
+            arrow.move(cos(dir) * distance, sin(dir) * distance);
+            target.draw(arrow);
+            arrow.move(cos(dir) * -distance, sin(dir) * -distance);
+        }
+    }
 }
 
 void World::addPlanet(const Planet& p)
