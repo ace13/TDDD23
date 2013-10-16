@@ -121,9 +121,17 @@ bool GameState::event(const sf::Event& ev)
         if (delta < 0)
             diff = -diff;
 
-        gameView.move(diff/zoomFactor);
-        
-        gameView.zoom(1 + delta / zoomFactor);
+        ///\FIXME limit zoomFactor to the available zoom factor
+        float worldDot = (mWorld.getSize().x);
+        float cameraDot = (getApplication().getGameView().getSize().x);
+        if (!((delta > 0 && cameraDot >= worldDot) || (delta < 0 && cameraDot <= 256)))
+        {
+            gameView.move(diff/zoomFactor);
+
+            gameView.zoom(1 + delta / zoomFactor);
+
+            sanitizeCamera();
+        }
     }
 
     return false;
@@ -139,6 +147,8 @@ void GameState::update(float dt)
         
         getApplication().getGameView().move(diff);
         mLastMouse = curMouse;
+
+        sanitizeCamera();
     }
 
     mWorld.update(dt);
@@ -150,4 +160,29 @@ void GameState::draw(sf::RenderTarget& target)
 void GameState::drawUi(sf::RenderTarget& target)
 {
     mWorld.drawUi(target);
+}
+
+void GameState::sanitizeCamera()
+{
+    sf::Vector2f worldSize = mWorld.getSize();
+    sf::Vector2f viewSize = getApplication().getGameView().getSize();
+
+    {
+        sf::Vector2f halfWorld = worldSize / 2.f;
+        sf::Vector2f halfView = viewSize / 2.f;
+        sf::Vector2f curPos = getApplication().getGameView().getCenter();
+        curPos.x = std::max(-halfWorld.x + halfView.x, std::min(curPos.x, halfWorld.x - halfView.x));
+        curPos.y = std::max(-halfWorld.y + halfView.y, std::min(curPos.y, halfWorld.y - halfView.y));
+        getApplication().getGameView().setCenter(curPos);
+    }
+
+    {
+        float worldDot = (worldSize.x);
+        float cameraDot = (viewSize.x);
+
+        if (cameraDot > worldDot)
+            getApplication().getGameView().zoom(worldDot/cameraDot);
+        else if (cameraDot < 256)
+            getApplication().getGameView().zoom(256/cameraDot);
+    }
 }

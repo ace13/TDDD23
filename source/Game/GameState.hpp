@@ -19,6 +19,8 @@ public:
     void drawUi(sf::RenderTarget& target);
 
 private:
+    void sanitizeCamera();
+
     bool mMouseDrag;
     sf::Vector2f mLastMouse;
 
