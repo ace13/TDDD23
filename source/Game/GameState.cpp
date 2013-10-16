@@ -90,7 +90,10 @@ bool GameState::load()
     }
 
     if (loadStates.count(mLoadState) == 0)
+    {
+        sanitizeCamera();
         return true;
+    }
 
     loadStates[mLoadState]();
     return false;
