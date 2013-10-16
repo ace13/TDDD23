@@ -97,18 +97,28 @@ void Planet::draw(sf::RenderTarget& target)
 
 void Planet::drawWell(sf::RenderTarget& target)
 {
-    sf::CircleShape shape(mRadius*4, 64);
+    sf::CircleShape shape(mRadius*4 * getPercentage(), 16);
     shape.setPosition(mPosition);
-    shape.setFillColor(sf::Color::Transparent);
-    shape.setOrigin(mRadius*4, mRadius*4);
+    shape.setOrigin(mRadius*4 * getPercentage(), mRadius*4 * getPercentage());
     
-    auto& tone = *mWellShader;
-    auto& view = target.getView();
-    auto pos = (sf::Vector2f)target.mapCoordsToPixel(mPosition);
+    if (sf::Shader::isAvailable())
+    {
+        shape.setFillColor(sf::Color::Transparent);
 
-    tone.setParameter("sizeDiff", target.getSize().y / view.getSize().y);
-    tone.setParameter("center", pos.x, target.getSize().y - pos.y, mRadius*4, mRadius);
-    tone.setParameter("color", sf::Color(0,0,255,255));
+        auto& tone = *mWellShader;
+        auto& view = target.getView();
+        auto pos = (sf::Vector2f)target.mapCoordsToPixel(mPosition);
 
-    target.draw(shape, &tone);
+        tone.setParameter("sizeDiff", target.getSize().y / view.getSize().y);
+        tone.setParameter("center", pos.x, target.getSize().y - pos.y, mRadius*4 * getPercentage(), mRadius);
+        tone.setParameter("color", sf::Color(0,0,255,255));
+
+        target.draw(shape, &tone);
+    }
+    else
+    {
+        shape.setFillColor(sf::Color(0,0,255,50));
+
+        target.draw(shape);
+    }
 }
