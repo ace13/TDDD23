@@ -27,7 +27,7 @@ elseif (UNIX)
         set(C11 "-std=c++11 -stdlib=libc++")
     endif ()
 
-    set(CMAKE_CXX_FLAGS                "-Wall -Wextra ${C11}")
+    set(CMAKE_CXX_FLAGS                "-Wall -Wextra ${C11} -pthread")
     set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g")
     set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
