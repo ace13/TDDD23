@@ -34,7 +34,7 @@ void Planet::addedToWorld(World& world)
     {
         b2BodyDef def;
         def.type = b2_staticBody;
-        def.position = b2Vec2(mPosition.x, mPosition.y);
+        def.position = b2Vec2(mPosition.x / 5.f, mPosition.y / 5.f);
         def.angle = 0;
         def.linearVelocity = b2Vec2(0, 0);
         def.angularVelocity = 0;
@@ -56,7 +56,7 @@ void Planet::addedToWorld(World& world)
     {
         b2CircleShape shape;
         shape.m_p.SetZero();
-        shape.m_radius = mRadius;
+        shape.m_radius = mRadius / 5.f;
 
         b2FixtureDef def;
         def.density = 1.f;
@@ -73,7 +73,7 @@ void Planet::setPosition(const sf::Vector2f& pos)
 {
     mPosition = pos;
     if (mBody)
-        mBody->SetTransform(b2Vec2(pos.x, pos.y), 0);
+        mBody->SetTransform(b2Vec2(pos.x / 5.f, pos.y / 5.f), 0);
 }
 
 float Planet::getPercentage() const

@@ -123,7 +123,7 @@ bool GameState::event(const sf::Event& ev)
 
             float force = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
 
-            Game::Weapon fired(s, atan2(mPos.y - pos.y, mPos.x - pos.x), force);
+            Game::Weapon fired(&s, atan2(mPos.y - pos.y, mPos.x - pos.x), force);
 
             mWorld.addWeapon(fired);
         }

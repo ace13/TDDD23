@@ -22,7 +22,7 @@ sf::Vector2f Ship::getPosition() const
     if (mBody)
     {
         auto pos = mBody->GetPosition();
-        return sf::Vector2f(pos.x, pos.y);
+        return sf::Vector2f(pos.x * 5.f, pos.y * 5.f);
     }
     return mPosition;
 }
@@ -44,7 +44,7 @@ void Ship::addedToWorld(World& world)
     {
         b2BodyDef def;
         def.type = b2_dynamicBody;
-        def.position.Set(mPosition.x, mPosition.y);
+        def.position.Set(mPosition.x / 5.f, mPosition.y / 5.f);
         def.angle = mAngle;
         def.linearVelocity.SetZero();
         def.angularVelocity = 0;
@@ -66,9 +66,9 @@ void Ship::addedToWorld(World& world)
     {
         b2PolygonShape shape;
         b2Vec2 points[] = {
-            b2Vec2(0, -5),
-            b2Vec2(5, 5),
-            b2Vec2(-5, 5)
+            b2Vec2(0, -6 / 5.f),
+            b2Vec2(6 / 5.f, 6 / 5.f),
+            b2Vec2(-6 / 5.f, 6 / 5.f)
         };
         shape.Set(points, sizeof(points)/sizeof(b2Vec2));
 
@@ -90,7 +90,7 @@ void Ship::setPosition(const sf::Vector2f& pos)
 {
     mPosition = pos;
     if (mBody)
-        mBody->SetTransform(b2Vec2(pos.x, pos.y), getAngle());
+        mBody->SetTransform(b2Vec2(pos.x / 5.f, pos.y / 5.f), getAngle());
 }
 
 void Ship::setAngle(float ang)
@@ -99,7 +99,7 @@ void Ship::setAngle(float ang)
     if (mBody)
     {
         auto p = getPosition();
-        mBody->SetTransform(b2Vec2(p.x, p.y), ang);
+        mBody->SetTransform(b2Vec2(p.x / 5.f, p.y / 5.f), ang);
     }
 }
 
@@ -116,7 +116,7 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 100.f;
+    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 25.f;
 
     mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }
@@ -133,12 +133,12 @@ void Ship::draw(sf::RenderTarget& target)
         return;
 
     sf::ConvexShape shape(3);
-    shape.setPoint(0, sf::Vector2f(0, -5));
-    shape.setPoint(1, sf::Vector2f(5, 5));
-    shape.setPoint(2, sf::Vector2f(-5, 5));
+    shape.setPoint(0, sf::Vector2f(0, -6));
+    shape.setPoint(1, sf::Vector2f(6, 6));
+    shape.setPoint(2, sf::Vector2f(-6, 6));
 
     float ang = mBody->GetAngle();
-    auto pos = mBody->GetPosition();
+    auto pos = getPosition();
     shape.setRotation(ang * (180/M_PI));
     shape.setOrigin(sf::Vector2f(0, 0));
     shape.setPosition(pos.x, pos.y);

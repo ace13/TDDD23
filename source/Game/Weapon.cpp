@@ -8,10 +8,9 @@
 
 using namespace Game;
 
-Weapon::Weapon(Ship& own, float ang, float force) :
-    mOwner(own), mFireAng(ang), mFireForce(force), mBody(nullptr), mLiveTime(0)
+Weapon::Weapon(Ship* own, float ang, float force) :
+    mOwner(own), mFireAng(ang), mFireForce(force), mBody(nullptr), mLiveTime(0), mDestroyed(false)
 {
-
 }
 
 Weapon::~Weapon()
@@ -24,7 +23,7 @@ sf::Vector2f Weapon::getPosition() const
     if (mBody)
     {
         auto& pos = mBody->GetPosition();
-        return sf::Vector2f(pos.x, pos.y);
+        return sf::Vector2f(pos.x * 5.f, pos.y * 5.f);
     }
 
     return sf::Vector2f();
@@ -36,16 +35,32 @@ float Weapon::getAngle() const
 }
 
 
+void Weapon::setOwner(Ship* owner)
+{
+    if (mBody)
+    {
+        auto fix = mBody->GetFixtureList();
+        do
+        {
+            b2Filter old = fix->GetFilterData();
+            old.groupIndex = owner->mGroup;
+            fix->SetFilterData(old);
+        } while (fix = fix->GetNext());
+    }
+
+    mOwner = owner;
+}
+
 void Weapon::addedToWorld(Game::World& world)
 {
     auto& b2d = *world.getBox2D();
 
     {
-        auto pos = mOwner.getPosition();
+        auto pos = mOwner->getPosition();
 
         b2BodyDef def;
         def.type = b2_dynamicBody;
-        def.position = b2Vec2(pos.x, pos.y);
+        def.position = b2Vec2(pos.x / 5.f, pos.y / 5.f);
         def.angle = 0;
         def.linearVelocity = b2Vec2(0, 0);
         def.angularVelocity = 0;
@@ -67,7 +82,7 @@ void Weapon::addedToWorld(Game::World& world)
     {
         b2CircleShape shape;
         shape.m_p.SetZero();
-        shape.m_radius = 1;
+        shape.m_radius = 1 / 5.f;
 
         b2FixtureDef def;
         def.density = 1.f;
@@ -76,12 +91,12 @@ void Weapon::addedToWorld(Game::World& world)
         def.restitution = 0.5f;
         def.shape = &shape;
 
-        def.filter.groupIndex = mOwner.mGroup;
+        def.filter.groupIndex = mOwner->mGroup;
 
         auto fix = body.CreateFixture(&def);
     }
 
-    sf::Vector2f force = sf::Vector2f(cos(mFireAng), sin(mFireAng)) * mFireForce * 500.f;
+    sf::Vector2f force = sf::Vector2f(cos(mFireAng), sin(mFireAng)) * mFireForce * 20.f;
 
     mBody->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
 }
@@ -99,30 +114,50 @@ void Weapon::addGravity(const sf::Vector2f& pos, float strength)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 150.f;
+    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 25.f;
 
     mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }
 
 void Weapon::collide(Entity& other)
 {
-    auto& weaps = getWorld().getWeapons();
-
-    //auto it = std::find(weaps.begin(), weaps.end(), *this);
-    //weaps.erase(it);
+    mDestroyed = true;
 }
 
 void Weapon::update(float dt)
 {
     mLiveTime += dt;
+
+    if (mLiveTime > 30)
+    {
+        mDestroyed = true;
+    }
 }
 
 void Weapon::draw(sf::RenderTarget& target)
 {
+    static const unsigned int ghosts = 5;
+
+    auto velocity = sf::Vector2f();
+    {
+        auto b2vel = mBody->GetLinearVelocity();
+        velocity.x = b2vel.x / 25;
+        velocity.y = b2vel.y / 25;
+    }
+
     sf::CircleShape bullet(1, 6);
 
+    float alphagain = 255.f / ghosts;
+    bullet.setFillColor(sf::Color(0,0,0,0));
     bullet.setPosition(getPosition());
     bullet.setOrigin(1, 1);
     
-    target.draw(bullet);
+    bullet.move(velocity * -(float)(ghosts+1));
+
+    for (unsigned int i = 0; i < ghosts; ++i)
+    {
+        bullet.move(velocity);
+        bullet.setFillColor(sf::Color(255,255,255,alphagain * (i+1)));
+        target.draw(bullet);
+    }
 }

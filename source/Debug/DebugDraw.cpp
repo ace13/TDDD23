@@ -1,6 +1,6 @@
 #include "DebugDraw.hpp"
 
-static const float RATIO = 1;
+static const float RATIO = 5;
 static const float LINE_THICK = 2.f;
 
 DebugDraw::DebugDraw(sf::RenderTarget &window)

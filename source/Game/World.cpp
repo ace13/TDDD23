@@ -47,7 +47,6 @@ void World::init()
         return;
 
     mBox2DWorld = new b2World(b2Vec2(0,0));
-    updateWalls();
 }
 
 void World::update(float dt)
@@ -84,15 +83,27 @@ void World::update(float dt)
         }
     }
 
-    FOR_EACH (auto& w, mWeapons)
+    for (auto it = mWeapons.begin(); it != mWeapons.end();)
     {
-        w.update(dt);
+        auto& w = *it;
 
-        FOR_EACH (auto& p, mPlanets)
+        if (w.isDestroyed())
         {
-            float distance = sqrt(dist(w.getPosition(), p.getPosition()));
-            if (distance < (p.getRadius() * 4))
-                w.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
+            mBox2DWorld->DestroyBody(w.mBody);
+            it = mWeapons.erase(it);
+        }
+        else
+        {
+            w.update(dt);
+
+            FOR_EACH (auto& p, mPlanets)
+            {
+                float distance = sqrt(dist(w.getPosition(), p.getPosition()));
+                if (distance < (p.getRadius() * 4))
+                    w.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
+            }
+
+            ++it;
         }
     }
 }
@@ -109,7 +120,7 @@ void World::updateWalls()
         {
             b2BodyDef def;
             def.type = b2_staticBody;
-            def.position.Set(pos.x + size.x / 2, pos.y + size.y / 2);
+            def.position.Set((pos.x + size.x / 2) / 5.f, (pos.y + size.y / 2) / 5.f);
             def.angle = 0;
             def.linearVelocity = b2Vec2(0, 0);
             def.angularVelocity = 0;
@@ -129,7 +140,7 @@ void World::updateWalls()
     
         {
             b2PolygonShape shape;
-            shape.SetAsBox(size.x / 2, size.y / 2);
+            shape.SetAsBox((size.x / 2) / 5.f, (size.y / 2) / 5.f);
 
             b2FixtureDef def;
             def.density = 1.f;
@@ -260,7 +271,7 @@ void World::addPlanet(const Planet& p)
 {
     Game::Planet tmp = p;
 
-    float radius = tmp.getRadius() * 1.5f;
+    float radius = tmp.getRadius() * 2.f;
 
     std::random_device dev;
     std::uniform_real_distribution<float> distX(radius, mSize.x - radius);
@@ -280,8 +291,8 @@ void World::addPlanet(const Planet& p)
         pos = sf::Vector2f(distX(dev) - mSize.x / 2.f, distY(dev) - mSize.y / 2.f);
 
         b2AABB aabb;
-        aabb.lowerBound.Set(pos.x-radius, pos.y-radius);
-        aabb.upperBound.Set(pos.x+radius, pos.y+radius);
+        aabb.lowerBound.Set(pos.x / 5.f-radius / 5.f, pos.y / 5.f-radius / 5.f);
+        aabb.upperBound.Set(pos.x / 5.f+radius / 5.f, pos.y / 5.f+radius / 5.f);
         mBox2DWorld->QueryAABB(&occupyCheck, aabb);
     } while (occupyCheck.occupied && attempts++ < 100);
 
