@@ -116,7 +116,7 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 25.f;
+    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 50.f;
 
     mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }
@@ -142,8 +142,6 @@ void Ship::draw(sf::RenderTarget& target)
     shape.setRotation(ang * (180/M_PI));
     shape.setOrigin(sf::Vector2f(0, 0));
     shape.setPosition(pos.x, pos.y);
-
-    //printf("Position %fx%f...\n", pos.x, pos.y);
 
     //shape.setOutlineColor(sf::Color::White);
     //shape.setOutlineThickness(2.f);
