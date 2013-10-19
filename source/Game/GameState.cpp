@@ -1,6 +1,7 @@
 #include "GameState.hpp"
 #include "Planet.hpp"
 #include "Ship.hpp"
+#include "Weapon.hpp"
 #include "../Application.hpp"
 
 #include <SFML/Window/Event.hpp>
@@ -112,6 +113,21 @@ bool GameState::event(const sf::Event& ev)
     }
     else if (ev.type == sf::Event::MouseButtonReleased && ev.mouseButton.button == sf::Mouse::Left)
         mMouseDrag = false;
+    else if (ev.type == sf::Event::MouseButtonReleased && ev.mouseButton.button == sf::Mouse::Right)
+    {
+        sf::Vector2f mPos = getApplication().getMouse();
+        auto& ships = mWorld.getShips();
+        FOR_EACH(Game::Ship& s, ships)
+        {
+            auto pos = s.getPosition();
+
+            float force = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
+
+            Game::Weapon fired(s, atan2(mPos.y - pos.y, mPos.x - pos.x), force);
+
+            mWorld.addWeapon(fired);
+        }
+    }
     else if (ev.type == sf::Event::MouseWheelMoved)
     {
         static float zoomFactor = 5.f;
@@ -133,7 +149,7 @@ bool GameState::event(const sf::Event& ev)
 
             gameView.zoom(1 + delta / zoomFactor);
 
-            sanitizeCamera();
+            //sanitizeCamera();
         }
     }
 
@@ -151,7 +167,7 @@ void GameState::update(float dt)
         getApplication().getGameView().move(diff);
         mLastMouse = curMouse;
 
-        sanitizeCamera();
+        //sanitizeCamera();
     }
 
     mWorld.update(dt);
