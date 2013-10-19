@@ -79,6 +79,9 @@ void Ship::addedToWorld(World& world)
         def.restitution = 0.f;
         def.shape = &shape;
 
+        def.filter.groupIndex = -(world.getShips().size() + 1);
+        mGroup = def.filter.groupIndex;
+
         auto fix = body.CreateFixture(&def);
     }
 }
@@ -113,7 +116,7 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength;
+    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 100.f;
 
     mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }
