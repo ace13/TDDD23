@@ -1,6 +1,7 @@
 #include "World.hpp"
 #include "Planet.hpp"
 #include "Ship.hpp"
+#include "Weapon.hpp"
 
 #include <Box2D/Box2D.h>
 #include <random>
@@ -46,6 +47,7 @@ void World::init()
         return;
 
     mBox2DWorld = new b2World(b2Vec2(0,0));
+    updateWalls();
 }
 
 void World::update(float dt)
@@ -81,6 +83,18 @@ void World::update(float dt)
                 s.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
         }
     }
+
+    FOR_EACH (auto& w, mWeapons)
+    {
+        w.update(dt);
+
+        FOR_EACH (auto& p, mPlanets)
+        {
+            float distance = sqrt(dist(w.getPosition(), p.getPosition()));
+            if (distance < (p.getRadius() * 4))
+                w.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
+        }
+    }
 }
 
 void World::updateWalls()
@@ -91,7 +105,47 @@ void World::updateWalls()
             mBox2DWorld->DestroyBody(mWalls[i]);
         }
 
+    auto setWall = [&](int id, const sf::Vector2f& pos, const sf::Vector2f& size) {
+        {
+            b2BodyDef def;
+            def.type = b2_staticBody;
+            def.position.Set(pos.x + size.x / 2, pos.y + size.y / 2);
+            def.angle = 0;
+            def.linearVelocity = b2Vec2(0, 0);
+            def.angularVelocity = 0;
+            def.linearDamping = 0;
+            def.angularDamping = 0;
+            def.allowSleep = true;
+            def.awake = true;
+            def.fixedRotation = true;
+            def.bullet = false;
+            def.active = true;
+            def.gravityScale = 0;
+
+            mWalls[id] = mBox2DWorld->CreateBody(&def);
+        }
+
+        auto& body = *mWalls[id];
     
+        {
+            b2PolygonShape shape;
+            shape.SetAsBox(size.x / 2, size.y / 2);
+
+            b2FixtureDef def;
+            def.density = 1.f;
+            def.isSensor = false;
+            def.friction = 0.f;
+            def.restitution = 1.f;
+            def.shape = &shape;
+
+            auto fix = body.CreateFixture(&def);
+         }
+    };
+
+    setWall(0, sf::Vector2f(0, -1) - mSize/2.f, sf::Vector2f(mSize.x, 1));
+    setWall(1, sf::Vector2f(mSize.x, 0) - mSize/2.f, sf::Vector2f(1, mSize.y));
+    setWall(2, sf::Vector2f(0, mSize.y) - mSize/2.f, sf::Vector2f(mSize.x, 1));
+    setWall(3, sf::Vector2f(-1, 0) - mSize/2.f, sf::Vector2f(1, mSize.y));
 }
 
 ///\FIXME Don't draw everything always.
@@ -144,6 +198,11 @@ void World::draw(sf::RenderTarget& target)
     {
         s.draw(target);
     }
+
+    FOR_EACH (auto& w, mWeapons)
+    {
+        w.draw(target);
+    }
 }
 
 void World::drawUi(sf::RenderTarget& target)
@@ -169,6 +228,10 @@ void World::drawUi(sf::RenderTarget& target)
     arrow.setPoint(1, sf::Vector2f( 5,  0));
     arrow.setPoint(2, sf::Vector2f(-5,  0));
     arrow.setOrigin(0, -5);
+
+    arrow.setOutlineColor(sf::Color::White);
+    arrow.setOutlineThickness(1.5f);
+    arrow.setFillColor(sf::Color::Transparent);
 
     auto& cCent = target.getView().getCenter();
     sf::Vector2f wCent(mCameraRect.left + mCameraRect.width / 2, mCameraRect.top + mCameraRect.height / 2);
@@ -197,7 +260,7 @@ void World::addPlanet(const Planet& p)
 {
     Game::Planet tmp = p;
 
-    float radius = tmp.getRadius() * 1.5;
+    float radius = tmp.getRadius() * 1.5f;
 
     std::random_device dev;
     std::uniform_real_distribution<float> distX(radius, mSize.x - radius);
@@ -226,7 +289,7 @@ void World::addPlanet(const Planet& p)
         return;
 
     tmp.setPosition(pos);
-    tmp.addedToWorld(*this);
+    tmp.addToWorld(*this);
 
     mPlanets.push_back(tmp);
 }
@@ -256,7 +319,16 @@ void World::addShip(const Ship& s)
 
     tmp.setPosition(planetPos + dir * (targetPlanet->getRadius() + 5));
     tmp.setAngle(angle + (90 * (M_PI/180)));
-    tmp.addedToWorld(*this);
+    tmp.addToWorld(*this);
 
     mShips.push_back(tmp);
+}
+
+void World::addWeapon(const Weapon& w)
+{
+    Weapon tmp = w;
+
+    tmp.addToWorld(*this);
+
+    mWeapons.push_back(tmp);
 }

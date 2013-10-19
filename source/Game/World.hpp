@@ -16,6 +16,7 @@ namespace Game
 
 class Planet;
 class Ship;
+class Weapon;
 
 class World
 {
@@ -29,17 +30,19 @@ public:
 
     void addPlanet(const Planet& planet);
     void addShip(const Ship& ship);
+    void addWeapon(const Weapon& weap);
 
     void draw(sf::RenderTarget& target);
     void drawUi(sf::RenderTarget& target);
 
     inline sf::Vector2f getSize() const { return mSize; }
-    inline void setSize(sf::Vector2f size) { mSize = size; }
+    inline void setSize(sf::Vector2f size) { mSize = size; updateWalls(); }
 
     inline b2World* getBox2D() { return mBox2DWorld; }
 
-    inline const std::vector<Planet>& getPlanets() { return mPlanets; }
-    inline const std::vector<Ship>& getShips() { return mShips; }
+    inline std::vector<Weapon>& getWeapons() { return mWeapons; }
+    inline std::vector<Planet>& getPlanets() { return mPlanets; }
+    inline std::vector<Ship>& getShips() { return mShips; }
 
 private:
     World(const World&);
@@ -47,6 +50,7 @@ private:
 
     sf::Vector2f mSize;
 
+    std::vector<Weapon> mWeapons;
     std::vector<Planet> mPlanets;
     std::vector<Ship> mShips;
     sf::FloatRect mCameraRect;
