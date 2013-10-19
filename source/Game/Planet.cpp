@@ -85,9 +85,9 @@ void Planet::draw(sf::RenderTarget& target)
 {
     ///\TODO Better graphics :D
     
-    sf::CircleShape shape(mRadius - 1.f);
+    sf::CircleShape shape(mRadius - 1.f, 36);
     shape.setPosition(mPosition);
-    shape.setFillColor(sf::Color(0,50,0,255));
+    shape.setFillColor(sf::Color(0,75,0,255));
     shape.setOutlineColor(sf::Color::Green);
     shape.setOutlineThickness(1.f);
     shape.setOrigin(mRadius-1.f, mRadius-1.f);
@@ -110,8 +110,8 @@ void Planet::drawWell(sf::RenderTarget& target)
         auto pos = (sf::Vector2f)target.mapCoordsToPixel(mPosition);
 
         tone.setParameter("sizeDiff", target.getSize().y / view.getSize().y);
-        tone.setParameter("center", pos.x, target.getSize().y - pos.y, mRadius*4 * getPercentage(), mRadius);
-        tone.setParameter("color", sf::Color(0,0,255,255));
+        tone.setParameter("center", pos.x, target.getSize().y - pos.y, mRadius * getPercentage(), mRadius * 4 * getPercentage());
+        tone.setParameter("color", sf::Color(0,64,255,255));
 
         target.draw(shape, &tone);
     }
