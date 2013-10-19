@@ -149,7 +149,7 @@ bool GameState::event(const sf::Event& ev)
 
             gameView.zoom(1 + delta / zoomFactor);
 
-            //sanitizeCamera();
+            sanitizeCamera();
         }
     }
 
@@ -167,7 +167,7 @@ void GameState::update(float dt)
         getApplication().getGameView().move(diff);
         mLastMouse = curMouse;
 
-        //sanitizeCamera();
+        sanitizeCamera();
     }
 
     mWorld.update(dt);
