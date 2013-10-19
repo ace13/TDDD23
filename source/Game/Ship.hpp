@@ -10,6 +10,7 @@ namespace Game
 {
 
 class Player;
+class Weapon;
 
 class Ship : public Entity
 {
@@ -26,6 +27,7 @@ public:
 
     void update(float dt);
     void draw(sf::RenderTarget& target);
+    inline void collide(Entity& other) { };
 
     void addGravity(const sf::Vector2f& pos, float strength);
 
@@ -34,6 +36,10 @@ private:
     float mAngle;
     Player* mPlayer;
     b2Body* mBody;
+
+    int mGroup;
+
+    friend class Weapon;
 };
 
 }

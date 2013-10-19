@@ -27,6 +27,7 @@ public:
     inline void resetDirty() { mDirty = false; }
 
     void addedToWorld(World& world);
+    inline void collide(Entity& other) { };
     
     void update(float) { }
     void draw(sf::RenderTarget& target);

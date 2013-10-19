@@ -16,4 +16,15 @@ public:
 
     virtual void update(float dt) = 0;
     virtual void draw(sf::RenderTarget& target) = 0;
+
+    virtual void collide(Entity& other) = 0;
+
+protected:
+    Game::World& getWorld() { return *mWorld; }
+
+private:
+    friend class Game::World;
+    void addToWorld(Game::World& world) { mWorld = &world; addedToWorld(world);; }
+
+    Game::World* mWorld;
 };
