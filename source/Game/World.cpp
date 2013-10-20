@@ -278,7 +278,7 @@ void World::addPlanet(const Planet& p)
     std::uniform_real_distribution<float> distY(radius, mSize.y - radius);
 
     sf::Vector2f pos;
-    struct : public b2QueryCallback {
+    static struct : public b2QueryCallback {
         bool occupied;
         bool ReportFixture(b2Fixture*) { occupied = true; return false; }
     } occupyCheck;

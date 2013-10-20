@@ -9,6 +9,13 @@ namespace Game { class World; }
 class Entity
 {
 public:
+    enum Type
+    {
+        Type_Terrain,
+        Type_Player,
+        Type_Weapon
+    };
+
     virtual sf::Vector2f getPosition() const = 0;
     virtual float getAngle() const = 0;
 
