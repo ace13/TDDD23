@@ -163,7 +163,7 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
     };
 
     float dist = calcDist(getPosition(), pos);
-    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 50.f;
+    sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 100.f;
 
     mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
 }

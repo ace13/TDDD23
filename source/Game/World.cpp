@@ -366,3 +366,36 @@ void World::addWeapon(Weapon& w)
 
     mWeapons.push_back(tmp);
 }
+
+void World::addExplosion(const sf::Vector2f& pos, float radius, bool damageTerrain)
+{
+    b2Vec2 bPos(pos.x / 5.f, pos.y / 5.f);
+    float bRad = radius / 5.f;
+
+    static struct : public b2QueryCallback {
+        std::list<b2Body*> candidates;
+        bool ReportFixture(b2Fixture* fix) { candidates.push_back(fix->GetBody()); return false; }
+    } explosionResult;
+
+    b2AABB aabb;
+    aabb.lowerBound.Set(bPos.x - bRad, bPos.y - bRad);
+    aabb.upperBound.Set(bPos.x + bRad, bPos.y + bRad);
+    mBox2DWorld->QueryAABB(&explosionResult, aabb);
+
+    auto& candidates = explosionResult.candidates;
+    FOR_EACH (auto body, candidates)
+    {
+        b2Vec2 bodyCom = body->GetWorldCenter();
+      
+        b2Vec2 blastDir = bodyCom - bPos;
+        float distance = blastDir.Normalize();
+
+        //ignore bodies outside the blast range
+        if ( distance >= bRad || distance == 0 )
+            continue;
+
+        float invDistance = 1 / distance;
+        float impulseMag = 50.f * invDistance * invDistance;
+        body->ApplyLinearImpulse(impulseMag * blastDir, bodyCom, true);
+    }
+}
