@@ -23,6 +23,27 @@ Planet::Planet() :
     mWellShader->loadFromFile("well.frag", sf::Shader::Fragment);
 }
 
+Planet::Planet(const Planet& other)
+{
+    mDirty = other.mDirty;
+    mRadius = other.mRadius;
+    mPosition = other.mPosition;
+    mBody = other.mBody;
+
+    mWellShader = other.mWellShader;
+    setWorld(other.getWorld());
+
+    if (mBody)
+    {
+        auto fix = mBody->GetFixtureList();
+
+        do
+        {
+            fix->SetUserData(this);
+        } while (fix = fix->GetNext());
+    }
+}
+
 Planet::~Planet()
 {
 }
@@ -45,7 +66,6 @@ void Planet::addedToWorld(World& world)
         def.fixedRotation = true;
         def.bullet = false;
         def.active = true;
-        def.userData = this;
         def.gravityScale = 0;
 
         mBody = b2d.CreateBody(&def);
@@ -64,6 +84,7 @@ void Planet::addedToWorld(World& world)
         def.friction = 1.f;
         def.restitution = 0;
         def.shape = &shape;
+        def.userData = this;
 
         auto fix = body.CreateFixture(&def);
     }

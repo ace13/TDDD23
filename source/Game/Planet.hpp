@@ -16,6 +16,7 @@ class Planet : public Entity
 {
 public:
     Planet();
+    Planet(const Planet&);
     ~Planet();
 
     inline float getRadius() const { return mRadius; }
@@ -28,6 +29,7 @@ public:
 
     void addedToWorld(World& world);
     inline void collide(Entity& other) { };
+    inline Type getType() const { return Type_Terrain; }
     
     void update(float) { }
     void draw(sf::RenderTarget& target);

@@ -13,6 +13,29 @@ Weapon::Weapon(Ship* own, float ang, float force) :
 {
 }
 
+Weapon::Weapon(const Weapon& other)
+{
+    mOwner = other.mOwner;
+    mBody = other.mBody;
+
+    mFireAng = other.mFireAng;
+    mFireForce = other.mFireForce;
+    mLiveTime = other.mLiveTime;
+
+    mDestroyed = other.mDestroyed;
+    setWorld(other.getWorld());
+
+    if (mBody)
+    {
+        auto fix = mBody->GetFixtureList();
+
+        do
+        {
+            fix->SetUserData(this);
+        } while (fix = fix->GetNext());
+    }
+}
+
 Weapon::~Weapon()
 {
 }
@@ -71,7 +94,6 @@ void Weapon::addedToWorld(Game::World& world)
         def.fixedRotation = false;
         def.bullet = true;
         def.active = true;
-        def.userData = this;
         def.gravityScale = 0;
 
         mBody = b2d.CreateBody(&def);
@@ -90,6 +112,7 @@ void Weapon::addedToWorld(Game::World& world)
         def.friction = 0.1f;
         def.restitution = 0.5f;
         def.shape = &shape;
+        def.userData = this;
 
         def.filter.groupIndex = mOwner->mGroup;
 

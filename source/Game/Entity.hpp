@@ -25,9 +25,11 @@ public:
     virtual void draw(sf::RenderTarget& target) = 0;
 
     virtual void collide(Entity& other) = 0;
+    virtual Type getType() const = 0;
 
 protected:
-    Game::World& getWorld() { return *mWorld; }
+    inline Game::World& getWorld() const { return *mWorld; }
+    inline void setWorld(Game::World& w) { mWorld = &w; }
 
 private:
     friend class Game::World;

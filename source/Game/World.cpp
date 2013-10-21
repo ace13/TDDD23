@@ -10,9 +10,29 @@
 #include "../Debug/DebugDraw.hpp"
 #endif
 
+struct myListener : public b2ContactListener {
+    void BeginContact(b2Contact* contact) 
+    {
+        auto A = contact->GetFixtureA();
+        auto B = contact->GetFixtureB();
+        Entity* aEnt = nullptr, *bEnt = nullptr;
+        
+        if (A->GetUserData())
+            aEnt = reinterpret_cast<Entity*>(A->GetUserData());
+        if (B->GetUserData())
+            bEnt = reinterpret_cast<Entity*>(B->GetUserData());
+
+        if (!aEnt || !bEnt)
+            return;
+
+        aEnt->collide(*bEnt);
+        bEnt->collide(*aEnt);
+    }
+};
+
 using namespace Game;
 
-World::World() : mBox2DWorld(nullptr)
+World::World() : mBox2DWorld(nullptr), mListener(nullptr)
 #ifdef DEBUG
     , mDebugDraw(nullptr), mDebugTarget(new sf::RenderTexture())
 #endif
@@ -33,6 +53,8 @@ World::~World()
 
     if (mBox2DWorld)
         delete mBox2DWorld;
+    if (mListener)
+        delete mListener;
 #ifdef DEBUG
     if (mDebugDraw)
         delete mDebugDraw;
@@ -46,7 +68,10 @@ void World::init()
     if (mBox2DWorld)
         return;
 
+    mListener = new myListener;
+
     mBox2DWorld = new b2World(b2Vec2(0,0));
+    mBox2DWorld->SetContactListener(mListener);
 }
 
 void World::update(float dt)
@@ -85,22 +110,20 @@ void World::update(float dt)
 
     for (auto it = mWeapons.begin(); it != mWeapons.end();)
     {
-        auto& w = *it;
-
-        if (w.isDestroyed())
+        if (it->isDestroyed())
         {
-            mBox2DWorld->DestroyBody(w.mBody);
+            mBox2DWorld->DestroyBody(it->mBody);
             it = mWeapons.erase(it);
         }
         else
         {
-            w.update(dt);
+            it->update(dt);
 
             FOR_EACH (auto& p, mPlanets)
             {
-                float distance = sqrt(dist(w.getPosition(), p.getPosition()));
+                float distance = sqrt(dist(it->getPosition(), p.getPosition()));
                 if (distance < (p.getRadius() * 4))
-                    w.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
+                    it->addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
             }
 
             ++it;
@@ -267,7 +290,7 @@ void World::drawUi(sf::RenderTarget& target)
     }
 }
 
-void World::addPlanet(const Planet& p)
+void World::addPlanet(Planet& p)
 {
     Game::Planet tmp = p;
 
@@ -305,7 +328,7 @@ void World::addPlanet(const Planet& p)
     mPlanets.push_back(tmp);
 }
 
-void World::addShip(const Ship& s)
+void World::addShip(Ship& s)
 {
     Game::Ship tmp = s;
 
@@ -335,7 +358,7 @@ void World::addShip(const Ship& s)
     mShips.push_back(tmp);
 }
 
-void World::addWeapon(const Weapon& w)
+void World::addWeapon(Weapon& w)
 {
     Weapon tmp = w;
 

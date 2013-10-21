@@ -13,6 +13,7 @@ class Weapon : public Entity
 {
 public:
     Weapon(Ship* own = nullptr, float ang = 0.f, float force = 0.f);
+    Weapon(const Weapon& other);
     ~Weapon();
 
     sf::Vector2f getPosition() const;
@@ -29,8 +30,10 @@ public:
     void addGravity(const sf::Vector2f& pos, float strength);
 
     inline bool isDestroyed() const { return mDestroyed; }
+    inline Type getType() const { return Type_Weapon; }
 
 private:
+    
     friend class World;
 
     Ship* mOwner;

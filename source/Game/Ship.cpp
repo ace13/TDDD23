@@ -13,8 +13,55 @@ Ship::Ship() :
 {
 }
 
+Ship::Ship(const Ship& other)
+{
+    mPlayer = other.mPlayer;
+    mBody = other.mBody;
+    mGroup = other.mGroup;
+    mAngle = other.mAngle;
+    mPosition = other.mPosition;
+
+    setWorld(other.getWorld());
+
+    if (mBody)
+    {
+        auto fix = mBody->GetFixtureList();
+
+        do
+        {
+            fix->SetUserData(this);
+        } while (fix = fix->GetNext());
+    }
+}
+
+Ship::Ship(Ship&& rvalue)
+{
+    move(rvalue);
+}
+
 Ship::~Ship()
 {
+}
+
+void Ship::move(Ship& other)
+{
+    mPlayer = other.mPlayer;
+    mBody = other.mBody;
+    mGroup = other.mGroup;
+    mAngle = other.mAngle;
+    mPosition = other.mPosition;
+    other.mPlayer = nullptr;
+    other.mBody = nullptr;
+    other.mGroup = 0;
+
+    setWorld(other.getWorld());
+
+    auto fix = mBody->GetFixtureList();
+
+    do
+    {
+        fix->SetUserData(this);
+    } while (fix = fix->GetNext());
 }
 
 sf::Vector2f Ship::getPosition() const
@@ -55,7 +102,6 @@ void Ship::addedToWorld(World& world)
         def.fixedRotation = false;
         def.bullet = false;
         def.active = true;
-        def.userData = this;
         def.gravityScale = 0;
 
         mBody = b2d.CreateBody(&def);
@@ -78,6 +124,7 @@ void Ship::addedToWorld(World& world)
         def.friction = 0.25f;
         def.restitution = 0.f;
         def.shape = &shape;
+        def.userData = this;
 
         def.filter.groupIndex = -(world.getShips().size() + 1);
         mGroup = def.filter.groupIndex;
