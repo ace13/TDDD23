@@ -9,7 +9,7 @@
 using namespace Game;
 
 Ship::Ship() :
-    mPlayer(nullptr), mBody(nullptr), mAngle(0)
+    mPlayer(nullptr), mBody(nullptr), mAngle(0), mFlyTime(0)
 {
 }
 
@@ -20,11 +20,13 @@ Ship::Ship(const Ship& other)
     mGroup = other.mGroup;
     mAngle = other.mAngle;
     mPosition = other.mPosition;
+    mFlyTime = other.mFlyTime;
 
     setWorld(other.getWorld());
 
     if (mBody)
     {
+        mBody->SetUserData(this);
         auto fix = mBody->GetFixtureList();
 
         do
@@ -34,34 +36,8 @@ Ship::Ship(const Ship& other)
     }
 }
 
-Ship::Ship(Ship&& rvalue)
-{
-    move(rvalue);
-}
-
 Ship::~Ship()
 {
-}
-
-void Ship::move(Ship& other)
-{
-    mPlayer = other.mPlayer;
-    mBody = other.mBody;
-    mGroup = other.mGroup;
-    mAngle = other.mAngle;
-    mPosition = other.mPosition;
-    other.mPlayer = nullptr;
-    other.mBody = nullptr;
-    other.mGroup = 0;
-
-    setWorld(other.getWorld());
-
-    auto fix = mBody->GetFixtureList();
-
-    do
-    {
-        fix->SetUserData(this);
-    } while (fix = fix->GetNext());
 }
 
 sf::Vector2f Ship::getPosition() const
@@ -96,12 +72,13 @@ void Ship::addedToWorld(World& world)
         def.linearVelocity.SetZero();
         def.angularVelocity = 0;
         def.linearDamping = 0;
-        def.angularDamping = 0;
+        def.angularDamping = 1;
         def.allowSleep = true;
         def.awake = true;
         def.fixedRotation = false;
         def.bullet = false;
         def.active = true;
+        def.userData = this;
         def.gravityScale = 0;
 
         mBody = b2d.CreateBody(&def);
@@ -111,25 +88,38 @@ void Ship::addedToWorld(World& world)
     
     {
         b2PolygonShape shape;
-        b2Vec2 points[] = {
-            b2Vec2(0, -6 / 5.f),
-            b2Vec2(6 / 5.f, 6 / 5.f),
-            b2Vec2(-6 / 5.f, 6 / 5.f)
-        };
-        shape.Set(points, sizeof(points)/sizeof(b2Vec2));
+        {
+            b2Vec2 points[] = {
+                b2Vec2(0, -1),
+                b2Vec2(1, 1),
+                b2Vec2(0, 0.9)
+            };
+            shape.Set(points, sizeof(points)/sizeof(b2Vec2));
+        }
 
         b2FixtureDef def;
         def.density = 1.f;
         def.isSensor = false;
-        def.friction = 0.25f;
+        def.friction = 0.75f;
         def.restitution = 0.f;
         def.shape = &shape;
         def.userData = this;
 
-        def.filter.groupIndex = -(world.getShips().size() + 1);
+        def.filter.groupIndex = -((int)world.getShips().size() + 1);
         mGroup = def.filter.groupIndex;
 
         auto fix = body.CreateFixture(&def);
+
+        {
+            b2Vec2 points[] = {
+                b2Vec2(0, 0.9),
+                b2Vec2(-1, 1),
+                b2Vec2(0, -1)
+            };
+            shape.Set(points, sizeof(points)/sizeof(b2Vec2));
+        }
+
+        fix = body.CreateFixture(&def);
     }
 }
 
@@ -164,14 +154,35 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
 
     float dist = calcDist(getPosition(), pos);
     sf::Vector2f delta = ((getPosition() - pos) / dist)  * strength * 100.f;
+    b2Vec2 force(-delta.x, -delta.y);
 
-    mBody->ApplyForceToCenter(b2Vec2(-delta.x, -delta.y), true);
+    mBody->ApplyForceToCenter(force, false);
+    if (mFlyTime > 1.f)
+    {
+        float ang = mBody->GetAngle();
+        float target = atan2(force.y, force.x) - (M_PI/2);
+        mBody->SetTransform(mBody->GetPosition(), target);
+    }
+
+    if (mFlyTime > 10.f)
+    {
+        b2Vec2 vel = mBody->GetLinearVelocity();
+        vel *= -0.75f;
+        mBody->ApplyForceToCenter(vel, true);
+    }
 }
 
 
 void Ship::update(float dt)
 {
-
+    if (mBody->IsAwake())
+    {
+        mFlyTime += dt;
+    }
+    else if (mFlyTime > 0)
+    {
+        mFlyTime = 0;
+    }
 }
 
 void Ship::draw(sf::RenderTarget& target)

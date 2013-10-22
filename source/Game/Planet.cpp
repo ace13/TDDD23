@@ -35,6 +35,7 @@ Planet::Planet(const Planet& other)
 
     if (mBody)
     {
+        mBody->SetUserData(this);
         auto fix = mBody->GetFixtureList();
 
         do
@@ -66,6 +67,7 @@ void Planet::addedToWorld(World& world)
         def.fixedRotation = true;
         def.bullet = false;
         def.active = true;
+        def.userData = this;
         def.gravityScale = 0;
 
         mBody = b2d.CreateBody(&def);

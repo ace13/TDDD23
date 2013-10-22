@@ -35,6 +35,7 @@ public:
     void addWeapon(Weapon& weap);
 
     void addExplosion(const sf::Vector2f& pos, float radius, bool damageTerrain = true);
+    std::list<const Entity*> getAlive() const;
 
     void draw(sf::RenderTarget& target);
     void drawUi(sf::RenderTarget& target);

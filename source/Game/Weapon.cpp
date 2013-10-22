@@ -27,6 +27,7 @@ Weapon::Weapon(const Weapon& other)
 
     if (mBody)
     {
+        mBody->SetUserData(this);
         auto fix = mBody->GetFixtureList();
 
         do
@@ -62,6 +63,7 @@ void Weapon::setOwner(Ship* owner)
 {
     if (mBody)
     {
+        mBody->SetUserData(this);
         auto fix = mBody->GetFixtureList();
         do
         {
@@ -94,6 +96,7 @@ void Weapon::addedToWorld(Game::World& world)
         def.fixedRotation = false;
         def.bullet = true;
         def.active = true;
+        def.userData = this;
         def.gravityScale = 0;
 
         mBody = b2d.CreateBody(&def);
@@ -144,7 +147,7 @@ void Weapon::addGravity(const sf::Vector2f& pos, float strength)
 
 void Weapon::collide(Entity& other)
 {
-    getWorld().addExplosion(getPosition(), 128.f);
+    getWorld().addExplosion(getPosition(), 2048.f);
 
     mDestroyed = true;
 }

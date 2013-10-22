@@ -100,6 +100,8 @@ void World::update(float dt)
 
     FOR_EACH (auto& s, mShips)
     {
+        s.update(dt);
+
         FOR_EACH (auto& p, mPlanets)
         {
             float distance = sqrt(dist(s.getPosition(), p.getPosition()));
@@ -201,13 +203,6 @@ void World::draw(sf::RenderTarget& target)
     mDebugTarget->setView(view);
     mDebugTarget->clear();
 
-    sf::RectangleShape world(mSize);
-    world.setFillColor(sf::Color::Transparent);
-    world.setOutlineColor(sf::Color::Red);
-    world.setOutlineThickness(5.f);
-    world.setOrigin(mSize/2.f);
-    mDebugTarget->draw(world);
-
     mBox2DWorld->DrawDebugData();
 
     mDebugTarget->display();
@@ -307,6 +302,7 @@ void World::addPlanet(Planet& p)
     } occupyCheck;
 
     unsigned int attempts = 0;
+    radius *= 2.f;
 
     do
     {
@@ -372,9 +368,9 @@ void World::addExplosion(const sf::Vector2f& pos, float radius, bool damageTerra
     b2Vec2 bPos(pos.x / 5.f, pos.y / 5.f);
     float bRad = radius / 5.f;
 
-    static struct : public b2QueryCallback {
+    struct : public b2QueryCallback {
         std::list<b2Body*> candidates;
-        bool ReportFixture(b2Fixture* fix) { candidates.push_back(fix->GetBody()); return false; }
+        bool ReportFixture(b2Fixture* fix) { if (std::find(candidates.begin(), candidates.end(), fix->GetBody()) == candidates.end()) candidates.push_back(fix->GetBody()); return true; }
     } explosionResult;
 
     b2AABB aabb;
@@ -385,17 +381,45 @@ void World::addExplosion(const sf::Vector2f& pos, float radius, bool damageTerra
     auto& candidates = explosionResult.candidates;
     FOR_EACH (auto body, candidates)
     {
-        b2Vec2 bodyCom = body->GetWorldCenter();
+        Entity* ent = nullptr;
+        if (body->GetUserData())
+            ent = reinterpret_cast<Entity*>(body->GetUserData());
+
+        Entity::Type type = Entity::Type_Player;
+        if (ent)
+            type = ent->getType();
+
+        if (type == Entity::Type_Terrain && damageTerrain)
+        {
+            // Damage terrain
+        }
+        else if (type == Entity::Type_Player)
+        {
+            b2Vec2 bodyCom = body->GetWorldCenter();
       
-        b2Vec2 blastDir = bodyCom - bPos;
-        float distance = blastDir.Normalize();
+            b2Vec2 blastDir = bodyCom - bPos;
+            float distance = blastDir.Normalize();
 
-        //ignore bodies outside the blast range
-        if ( distance >= bRad || distance == 0 )
-            continue;
+            if (distance >= bRad || distance == 0)
+                continue;
 
-        float invDistance = 1 / distance;
-        float impulseMag = 50.f * invDistance * invDistance;
-        body->ApplyLinearImpulse(impulseMag * blastDir, bodyCom, true);
+            float invDistance = 1 / distance;
+            float impulseMag = 100.f * invDistance * invDistance;
+            body->ApplyLinearImpulse(impulseMag * blastDir, bodyCom, true);
+        }
     }
+}
+
+std::list<const Entity*> World::getAlive() const
+{
+    std::list<const Entity*> ents;
+
+    FOR_EACH (auto& s, mShips)
+        if (s.mBody->IsAwake())
+            ents.push_back(static_cast<const Entity*>(&s));
+
+    FOR_EACH (auto& w, mWeapons)
+        ents.push_back(static_cast<const Entity*>(&w));
+    
+    return ents;
 }
