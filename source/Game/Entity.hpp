@@ -18,6 +18,7 @@ public:
 
     virtual sf::Vector2f getPosition() const = 0;
     virtual float getAngle() const = 0;
+    virtual float getRadius() const = 0;
 
     virtual void addedToWorld(Game::World& w) = 0;
 

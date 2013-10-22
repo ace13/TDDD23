@@ -18,6 +18,7 @@ public:
 
     sf::Vector2f getPosition() const;
     float getAngle() const;
+    inline float getRadius() const { return 1.f; }
 
     void setOwner(Ship* own);
 

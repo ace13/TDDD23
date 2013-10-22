@@ -17,12 +17,12 @@ class Ship : public Entity
 public:
     Ship();
     Ship(const Ship& rval);
-    Ship(Ship&& rvalue);
     ~Ship();
 
     sf::Vector2f getPosition() const;
     void setPosition(const sf::Vector2f&);
     float getAngle() const;
+    inline float getRadius() const { return 10.f; }
     void setAngle(float);
 
     void addedToWorld(World&);
@@ -35,10 +35,11 @@ public:
     void addGravity(const sf::Vector2f& pos, float strength);
 
 private:
-    void move(Ship& other);
+    friend class World;
 
     sf::Vector2f mPosition;
     float mAngle;
+    float mFlyTime;
     Player* mPlayer;
     b2Body* mBody;
 
