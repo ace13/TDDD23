@@ -172,8 +172,6 @@ void GameState::update(float dt)
         
             getApplication().getGameView().move(diff);
             mLastMouse = curMouse;
-
-            sanitizeCamera();
         }
     }
     else
@@ -219,7 +217,7 @@ void GameState::update(float dt)
         getApplication().getGameView().move((center - curPos) / 4.f);
     }
 
-    
+    sanitizeCamera();
 
     mWorld.update(dt);
 }
