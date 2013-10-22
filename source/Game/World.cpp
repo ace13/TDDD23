@@ -391,7 +391,7 @@ void World::addExplosion(const sf::Vector2f& pos, float radius, bool damageTerra
 
         if (type == Entity::Type_Terrain && damageTerrain)
         {
-            // Damage terrain
+            /// \TODO Damage terrain
         }
         else if (type == Entity::Type_Player)
         {

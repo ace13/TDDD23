@@ -22,8 +22,11 @@ set(GAME_SOURCE
     Game/GameState.hpp
     Game/GameState.cpp
 
+    Game/Entity.hpp
     Game/Planet.hpp
     Game/Planet.cpp
+    Game/Player.hpp
+    Game/Player.cpp
     Game/Ship.hpp
     Game/Ship.cpp
     Game/Weapon.hpp
