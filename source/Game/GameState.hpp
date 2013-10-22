@@ -21,6 +21,7 @@ public:
 private:
     void sanitizeCamera();
 
+    bool mMoving;
     bool mMouseDrag;
     sf::Vector2f mLastMouse;
 

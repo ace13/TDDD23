@@ -11,7 +11,7 @@
 #include <functional>
 #include <string>
 
-GameState::GameState() : mMouseDrag(false), mLoadState("Creating the universe")
+GameState::GameState() : mMouseDrag(false), mMoving(false), mLoadState("Creating the universe")
 {
 
 }
@@ -106,6 +106,7 @@ void GameState::unload()
 
 bool GameState::event(const sf::Event& ev)
 {
+    if (!mMoving)
     if (ev.type == sf::Event::MouseButtonPressed && ev.mouseButton.button == sf::Mouse::Left)
     {
         mMouseDrag = true;
@@ -157,18 +158,68 @@ bool GameState::event(const sf::Event& ev)
 }
 void GameState::update(float dt)
 {
-    if (mMouseDrag)
+    auto list = mWorld.getAlive();
+
+    if (list.empty())
     {
-        sf::Vector2f curMouse = getApplication().getMouse();
+        mMoving = false;
+        if (mMouseDrag)
+        {
+            sf::Vector2f curMouse = getApplication().getMouse();
 
-        sf::Vector2f diff = mLastMouse - curMouse;
-        curMouse += diff;
+            sf::Vector2f diff = mLastMouse - curMouse;
+            curMouse += diff;
         
-        getApplication().getGameView().move(diff);
-        mLastMouse = curMouse;
+            getApplication().getGameView().move(diff);
+            mLastMouse = curMouse;
 
-        sanitizeCamera();
+            sanitizeCamera();
+        }
     }
+    else
+    {
+        mMoving = true;
+        sf::Vector2f min(mWorld.getSize() * 1.1f), max(mWorld.getSize() * -1.1f);
+
+        sf::Vector2f center;
+        FOR_EACH (auto e, list)
+        {
+            auto& pos = e->getPosition();
+            center += pos;
+            float rad = e->getRadius() * 5.f;
+
+            min.x = std::min(min.x, pos.x - rad);
+            min.y = std::min(min.y, pos.y - rad);
+            max.x = std::max(max.x, pos.x + rad);
+            max.y = std::max(max.y, pos.y + rad);
+        }
+
+        center /= (float)list.size();
+        
+        sf::Vector2f target = max - min;
+        sf::Vector2f current = getApplication().getGameView().getSize();
+
+        if (current.x < current.y)
+        {
+            getApplication().getGameView().zoom((target.x / current.x));
+            current = getApplication().getGameView().getSize();
+            if (current.y < target.y)
+                getApplication().getGameView().zoom(target.y / current.y);
+        }
+        else
+        {
+            getApplication().getGameView().zoom((target.y / current.y));
+            current = getApplication().getGameView().getSize();
+            if (current.x < target.x)
+                getApplication().getGameView().zoom(target.x / current.x);
+        }
+
+
+        sf::Vector2f curPos = getApplication().getGameView().getCenter();
+        getApplication().getGameView().move((center - curPos) / 4.f);
+    }
+
+    
 
     mWorld.update(dt);
 }
@@ -188,7 +239,7 @@ void GameState::sanitizeCamera()
 
     {
         sf::Vector2f halfWorld = worldSize / 2.f;
-        sf::Vector2f halfView = viewSize / 2.f;
+        sf::Vector2f halfView;// = viewSize / 2.f;
         sf::Vector2f curPos = getApplication().getGameView().getCenter();
         curPos.x = std::max(-halfWorld.x + halfView.x, std::min(curPos.x, halfWorld.x - halfView.x));
         curPos.y = std::max(-halfWorld.y + halfView.y, std::min(curPos.y, halfWorld.y - halfView.y));
@@ -196,8 +247,19 @@ void GameState::sanitizeCamera()
     }
 
     {
-        float worldDot = (worldSize.x);
-        float cameraDot = (viewSize.x);
+        float worldDot;
+        float cameraDot;
+
+        if (viewSize.x < viewSize.y)
+        {
+            worldDot = (worldSize.y);
+            cameraDot = (viewSize.y);
+        }
+        else
+        {
+            worldDot = (worldSize.x);
+            cameraDot = (viewSize.x);
+        }
 
         if (cameraDot > worldDot)
             getApplication().getGameView().zoom(worldDot/cameraDot);
