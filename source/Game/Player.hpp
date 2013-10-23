@@ -12,22 +12,25 @@ class Ship;
 class Player
 {
 public:
-    Player(const std::string& name);
+    Player(const std::string& name, const sf::Color& color);
     ~Player();
 
     void synchWithFile();
 
-    std::string getName() const;
-    sf::Color getColor() const;
+    inline std::string getName() const { return mName; }
+    inline sf::Color getColor() const { return mColor; }
 
 private:
-    std::list<Player*> mKills;
-    std::list<Player*> mAssists;
-    std::list<Ship*> mShips;
+    std::list<Player*> mCurrentKills;
+    std::list<Player*> mCurrentAssists;
+    std::list<Ship*>   mCurrentShips;
+
+    unsigned int mTotalKills;
+    unsigned int mTotalAssists;
+    unsigned int mTotalDeaths;
 
     std::string mName;
-    sf::Color mColor;
-    float mScore;
+    sf::Color   mColor;
 };
 
 }
