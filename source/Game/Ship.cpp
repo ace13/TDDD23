@@ -1,5 +1,6 @@
 #include "Ship.hpp"
 #include "World.hpp"
+#include "Player.hpp"
 #include "../Config.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -59,6 +60,11 @@ float Ship::getAngle() const
     return mAngle;
 }
 
+void Ship::setPlayer(Player* p)
+{
+    mPlayer = p;
+    p->addShip(this);
+}
 
 void Ship::addedToWorld(World& world)
 {

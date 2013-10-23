@@ -20,6 +20,13 @@ public:
     inline std::string getName() const { return mName; }
     inline sf::Color getColor() const { return mColor; }
 
+    void addKill(Player* p);
+    void addAssists(Player* p);
+    void addShip(Ship* s);
+    void lostShip(Ship* s);
+
+    inline std::list<Ship*> getShips() const { return mCurrentShips; }
+
 private:
     std::list<Player*> mCurrentKills;
     std::list<Player*> mCurrentAssists;
@@ -29,6 +36,7 @@ private:
     unsigned int mTotalAssists;
     unsigned int mTotalDeaths;
 
+    bool        mDirty;
     std::string mName;
     sf::Color   mColor;
 };

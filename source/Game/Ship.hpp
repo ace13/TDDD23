@@ -25,6 +25,9 @@ public:
     inline float getRadius() const { return 10.f; }
     void setAngle(float);
 
+    void setPlayer(Player*);
+    inline Player* getPlayer() const { return mPlayer; }
+
     void addedToWorld(World&);
 
     void update(float dt);

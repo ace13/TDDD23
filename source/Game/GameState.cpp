@@ -1,23 +1,27 @@
 #include "GameState.hpp"
 #include "Planet.hpp"
+#include "Player.hpp"
 #include "Ship.hpp"
 #include "Weapon.hpp"
 #include "../Application.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 #include <unordered_map>
 #include <functional>
 #include <string>
 
-GameState::GameState() : mMouseDrag(false), mMoving(false), mLoadState("Creating the universe")
+GameState::GameState() : mMouseDrag(false), mMoving(false), mCurrentPlayer(0), mLoadState("Creating the universe")
 {
-
+    mFont = std::make_shared<sf::Font>();
+    mFont->loadFromFile("Dosis-Book.ttf");
 }
 GameState::~GameState()
 {
-
+    FOR_EACH (auto& p, mPlayers)
+        p->synchWithFile();
 }
 
 bool GameState::load()
@@ -36,6 +40,14 @@ bool GameState::load()
 
             case 1:
                 mWorld.updateWalls();
+                break;
+
+            case 2:
+                mPlayers.push_back(new Game::Player("Ace", sf::Color::White));
+                mPlayers.push_back(new Game::Player("Thorlar", sf::Color::Red));
+
+                FOR_EACH (auto& p, mPlayers)
+                    p->synchWithFile();
                 break;
 
             default:
@@ -57,11 +69,16 @@ bool GameState::load()
         loadStates["Adding retards"] = [&]() {
             static int totalRetards = 0;
 
-            if (totalRetards++ > 4)
+            if (totalRetards++ > 3)
                 mLoadState = "Giving them guns";
             else
             {
                 Game::Ship s;
+                
+                if (totalRetards > 1)
+                    s.setPlayer(mPlayers[0]);
+                else
+                    s.setPlayer(mPlayers[1]);
 
                 mWorld.addShip(s);
             }
@@ -228,6 +245,13 @@ void GameState::draw(sf::RenderTarget& target)
 void GameState::drawUi(sf::RenderTarget& target)
 {
     mWorld.drawUi(target);
+
+    sf::Text text(mPlayers[mCurrentPlayer]->getName(), *mFont);
+    auto size = text.getLocalBounds();
+
+    text.setPosition(target.getSize().x / 2.f - size.width / 2.f, 0);
+
+    target.draw(text);
 }
 
 void GameState::sanitizeCamera()
