@@ -179,6 +179,12 @@ void GameState::update(float dt)
 
     if (list.empty())
     {
+        if (mMoving)
+        {
+            mPlayers[mCurrentPlayer]->finishTurn();
+            mCurrentPlayer = (mCurrentPlayer+1) % mPlayers.size();
+        }
+
         mMoving = false;
         if (mMouseDrag)
         {

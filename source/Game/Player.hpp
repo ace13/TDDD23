@@ -25,6 +25,8 @@ public:
     void addShip(Ship* s);
     void lostShip(Ship* s);
 
+    void finishTurn();
+
     inline std::list<Ship*> getShips() const { return mCurrentShips; }
 
 private:

@@ -44,6 +44,16 @@ void Player::addShip(Ship* s)
         mCurrentShips.push_back(s);
 }
 
+void Player::finishTurn()
+{
+    if (mCurrentShips.size() > 1)
+    {
+        Ship* tmp = mCurrentShips.front();
+        mCurrentShips.pop_front();
+        mCurrentShips.push_back(tmp);
+    }
+}
+
 void Player::synchWithFile()
 {
     std::fstream fs;
