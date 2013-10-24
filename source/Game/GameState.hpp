@@ -29,6 +29,7 @@ private:
     bool mMoving;
     bool mMouseDrag;
     sf::Vector2f mLastMouse;
+    Game::Ship* mCurrentShip;
 
     unsigned int mCurrentPlayer;
     std::vector<Game::Player*> mPlayers;

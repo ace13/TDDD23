@@ -2,6 +2,7 @@
 #include "Planet.hpp"
 #include "Ship.hpp"
 #include "Weapon.hpp"
+#include "Player.hpp"
 
 #include <Box2D/Box2D.h>
 #include <random>
@@ -352,6 +353,11 @@ void World::addShip(Ship& s)
     tmp.addToWorld(*this);
 
     mShips.push_back(tmp);
+
+    ///\FIXME Give to player in a better way
+    auto p = mShips.back().getPlayer();
+    if (p)
+        p->addShip(&mShips.back());
 }
 
 void World::addWeapon(Weapon& w)

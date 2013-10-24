@@ -75,7 +75,7 @@ bool GameState::load()
             {
                 Game::Ship s;
                 
-                if (totalRetards > 1)
+                if (totalRetards > 2)
                     s.setPlayer(mPlayers[0]);
                 else
                     s.setPlayer(mPlayers[1]);
@@ -134,9 +134,11 @@ bool GameState::event(const sf::Event& ev)
     else if (ev.type == sf::Event::MouseButtonReleased && ev.mouseButton.button == sf::Mouse::Right)
     {
         sf::Vector2f mPos = getApplication().getMouse();
-        auto& ships = mWorld.getShips();
-        FOR_EACH(Game::Ship& s, ships)
+        auto& ships = mPlayers[mCurrentPlayer]->getShips();
+        
         {
+            auto& s = *ships.front();
+
             auto pos = s.getPosition();
 
             float force = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
@@ -183,6 +185,8 @@ void GameState::update(float dt)
         {
             mPlayers[mCurrentPlayer]->finishTurn();
             mCurrentPlayer = (mCurrentPlayer+1) % mPlayers.size();
+            
+            mCurrentShip = mPlayers[mCurrentPlayer]->getShips().front();
         }
 
         mMoving = false;

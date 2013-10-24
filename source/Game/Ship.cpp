@@ -63,7 +63,6 @@ float Ship::getAngle() const
 void Ship::setPlayer(Player* p)
 {
     mPlayer = p;
-    p->addShip(this);
 }
 
 void Ship::addedToWorld(World& world)
@@ -200,6 +199,9 @@ void Ship::draw(sf::RenderTarget& target)
     shape.setPoint(0, sf::Vector2f(0, -6));
     shape.setPoint(1, sf::Vector2f(6, 6));
     shape.setPoint(2, sf::Vector2f(-6, 6));
+
+    if (mPlayer)
+        shape.setFillColor(mPlayer->getColor());
 
     float ang = mBody->GetAngle();
     auto pos = getPosition();
