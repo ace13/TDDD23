@@ -144,6 +144,7 @@ bool GameState::event(const sf::Event& ev)
             float force = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
 
             Game::Weapon fired(&s, atan2(mPos.y - pos.y, mPos.x - pos.x), force);
+            s.setTurn(false);
 
             mWorld.addWeapon(fired);
         }
@@ -187,6 +188,7 @@ void GameState::update(float dt)
             mCurrentPlayer = (mCurrentPlayer+1) % mPlayers.size();
             
             mCurrentShip = mPlayers[mCurrentPlayer]->getShips().front();
+            mCurrentShip->setTurn();
 
             getApplication().getGameView().setCenter(mCurrentShip->getPosition());
         }

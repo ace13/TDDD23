@@ -175,17 +175,21 @@ void Weapon::draw(sf::RenderTarget& target)
 
     sf::CircleShape bullet(1, 6);
 
+    sf::Color fill(255,255,255,0);
+
     float alphagain = 255.f / ghosts;
-    bullet.setFillColor(sf::Color(0,0,0,0));
+    bullet.setFillColor(fill);
     bullet.setPosition(getPosition());
     bullet.setOrigin(1, 1);
     
     bullet.move(velocity * -(float)(ghosts+1));
 
-    for (unsigned int i = 0; i < ghosts; ++i)
+    for (unsigned int i = 1; i <= ghosts; ++i)
     {
+        fill.a = alphagain * i;
+
         bullet.move(velocity);
-        bullet.setFillColor(sf::Color(255,255,255,alphagain * (i+1)));
+        bullet.setFillColor(fill);
         target.draw(bullet);
     }
 }

@@ -10,7 +10,7 @@
 using namespace Game;
 
 Ship::Ship() :
-    mPlayer(nullptr), mBody(nullptr), mAngle(0), mFlyTime(0)
+    mPlayer(nullptr), mBody(nullptr), mAngle(0), mFlyTime(0), mAnimTime(0), mTurn(false)
 {
 }
 
@@ -22,6 +22,8 @@ Ship::Ship(const Ship& other)
     mAngle = other.mAngle;
     mPosition = other.mPosition;
     mFlyTime = other.mFlyTime;
+    mAnimTime = other.mAnimTime;
+    mTurn = other.mTurn;
 
     setWorld(other.getWorld());
 
@@ -180,6 +182,8 @@ void Ship::addGravity(const sf::Vector2f& pos, float strength)
 
 void Ship::update(float dt)
 {
+    mAnimTime += dt;
+
     if (mBody->IsAwake())
     {
         mFlyTime += dt;
@@ -209,8 +213,11 @@ void Ship::draw(sf::RenderTarget& target)
     shape.setOrigin(sf::Vector2f(0, 0));
     shape.setPosition(pos.x, pos.y);
 
-    //shape.setOutlineColor(sf::Color::White);
-    //shape.setOutlineThickness(2.f);
+    if (mTurn)
+    {
+        shape.setOutlineColor(sf::Color::White);
+        shape.setOutlineThickness(1.f + sin(mAnimTime*2)/2.f);
+    }
 
     target.draw(shape);
 }
