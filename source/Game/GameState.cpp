@@ -163,7 +163,7 @@ bool GameState::event(const sf::Event& ev)
         ///\FIXME limit zoomFactor to the available zoom factor
         float worldDot = (mWorld.getSize().x);
         float cameraDot = (getApplication().getGameView().getSize().x);
-        if (!((delta > 0 && cameraDot >= worldDot) || (delta < 0 && cameraDot <= 256)))
+        if (!((delta > 0 && cameraDot >= worldDot) || (delta < 0 && cameraDot <= 512)))
         {
             gameView.move(diff/zoomFactor);
 
@@ -187,6 +187,8 @@ void GameState::update(float dt)
             mCurrentPlayer = (mCurrentPlayer+1) % mPlayers.size();
             
             mCurrentShip = mPlayers[mCurrentPlayer]->getShips().front();
+
+            getApplication().getGameView().setCenter(mCurrentShip->getPosition());
         }
 
         mMoving = false;
@@ -279,6 +281,7 @@ void GameState::sanitizeCamera()
     }
 
     {
+        static const float smallest = 512;
         float worldDot;
         float cameraDot;
 
@@ -295,7 +298,7 @@ void GameState::sanitizeCamera()
 
         if (cameraDot > worldDot)
             getApplication().getGameView().zoom(worldDot/cameraDot);
-        else if (cameraDot < 256)
-            getApplication().getGameView().zoom(256/cameraDot);
+        else if (cameraDot < smallest)
+            getApplication().getGameView().zoom(smallest/cameraDot);
     }
 }

@@ -147,7 +147,7 @@ void Weapon::addGravity(const sf::Vector2f& pos, float strength)
 
 void Weapon::collide(Entity& other)
 {
-    getWorld().addExplosion(getPosition(), 256.f);
+    getWorld().addExplosion(getPosition(), 1024.f);
 
     mDestroyed = true;
 }
