@@ -29,6 +29,8 @@ public:
 
     inline std::list<Ship*> getShips() const { return mCurrentShips; }
 
+    inline unsigned int getKills() const { return mCurrentKills.size(); }
+
 private:
     std::list<Player*> mCurrentKills;
     std::list<Player*> mCurrentAssists;

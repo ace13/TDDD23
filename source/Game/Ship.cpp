@@ -3,6 +3,7 @@
 #include "Player.hpp"
 #include "../Config.hpp"
 
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <Box2D/Box2D.h>
@@ -10,7 +11,7 @@
 using namespace Game;
 
 Ship::Ship() :
-    mPlayer(nullptr), mBody(nullptr), mAngle(0), mFlyTime(0), mAnimTime(0), mTurn(false)
+    mPlayer(nullptr), mBody(nullptr), mAngle(0), mFlyTime(0), mAnimTime(0), mTurn(false), mHealth(100.f)
 {
 }
 
@@ -24,6 +25,7 @@ Ship::Ship(const Ship& other)
     mFlyTime = other.mFlyTime;
     mAnimTime = other.mAnimTime;
     mTurn = other.mTurn;
+    mHealth = other.mHealth;
 
     setWorld(other.getWorld());
 
@@ -220,4 +222,21 @@ void Ship::draw(sf::RenderTarget& target)
     }
 
     target.draw(shape);
+
+    sf::RectangleShape healthbar;
+    healthbar.setSize(sf::Vector2f(16, 4));
+    healthbar.setFillColor(sf::Color::Black);
+    healthbar.setOutlineColor(sf::Color::White);
+    healthbar.setOutlineThickness(0.9f);
+    healthbar.setPosition(pos.x - 8, pos.y - 16);
+    
+    target.draw(healthbar);
+
+    //healthbar.move(0.9f, 0.9f);
+    healthbar.setOutlineThickness(0);
+    healthbar.setFillColor(sf::Color::Green);
+
+    healthbar.setScale(mHealth / 100.f, 1);
+
+    target.draw(healthbar);
 }

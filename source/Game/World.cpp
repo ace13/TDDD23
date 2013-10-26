@@ -99,15 +99,27 @@ void World::update(float dt)
         return ((b.x-a.x)*(b.x-a.x))+((b.y-a.y)*(b.y-a.y));
     };
 
-    FOR_EACH (auto& s, mShips)
+    for (auto it = mShips.begin(); it != mShips.end();)
     {
-        s.update(dt);
-
-        FOR_EACH (auto& p, mPlanets)
+        if (it->getHealth() <= 0.f)
         {
-            float distance = sqrt(dist(s.getPosition(), p.getPosition()));
-            if (distance < (p.getRadius() * 4))
-                s.addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
+            mBox2DWorld->DestroyBody(it->mBody);
+            if (it->getPlayer())
+                it->getPlayer()->lostShip(it.operator->());
+            it = mShips.erase(it);
+        }
+        else
+        {
+            it->update(dt);
+
+            FOR_EACH (auto& p, mPlanets)
+            {
+                float distance = sqrt(dist(it->getPosition(), p.getPosition()));
+                if (distance < (p.getRadius() * 4))
+                    it->addGravity(p.getPosition(), 1 - (distance / (p.getRadius() * 4 * p.getPercentage())));
+            }
+
+            ++it;
         }
     }
 
@@ -275,6 +287,11 @@ void World::drawUi(sf::RenderTarget& target)
 
         if (!mCameraRect.intersects(ship))
         {
+            if (s.getPlayer())
+                arrow.setOutlineColor(s.getPlayer()->getColor());
+            else
+                arrow.setOutlineColor(sf::Color::White);
+
             float dir = atan2(s.getPosition().y - wCent.y, s.getPosition().x - wCent.x);
             float distance = target.getSize().y / 2.f - 25;
 
@@ -391,13 +408,13 @@ void World::addExplosion(const sf::Vector2f& pos, float radius, bool damageTerra
         if (body->GetUserData())
             ent = reinterpret_cast<Entity*>(body->GetUserData());
 
-        Entity::Type type = Entity::Type_Player;
+        Entity::Type type = Entity::Type_Terrain;
         if (ent)
             type = ent->getType();
 
         if (type == Entity::Type_Terrain && damageTerrain)
         {
-            /// \TODO Damage terrain
+            /// \FIXME Terrain damage removed for now, work on understanding clipper better.
         }
         else if (type == Entity::Type_Player)
         {
@@ -410,8 +427,12 @@ void World::addExplosion(const sf::Vector2f& pos, float radius, bool damageTerra
                 continue;
 
             float invDistance = 1 / distance;
-            float impulseMag = 100.f * invDistance * invDistance;
+            float impulseMag = 200.f * invDistance * invDistance;
             body->ApplyLinearImpulse(impulseMag * blastDir, bodyCom, true);
+
+            auto ship = dynamic_cast<Ship*>(ent);
+            if (ship)
+                ship->setHealth(ship->getHealth() - 25);
         }
     }
 }

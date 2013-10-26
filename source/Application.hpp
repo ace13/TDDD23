@@ -25,6 +25,8 @@ public:
     inline sf::View& getGameView() { return mGameView; }
     sf::Vector2f getMouse(bool ui = false);
 
+    inline sf::RenderWindow& getWindow() { return mWindow; }
+
 private:
     friend class StateManager;
 

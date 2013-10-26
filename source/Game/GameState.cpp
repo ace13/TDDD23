@@ -4,13 +4,16 @@
 #include "Ship.hpp"
 #include "Weapon.hpp"
 #include "../Application.hpp"
+#include "WinState.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
 
 #include <unordered_map>
 #include <functional>
+#include <random>
 #include <string>
 
 GameState::GameState() : mMouseDrag(false), mMoving(false), mCurrentPlayer(0), mLoadState("Creating the universe")
@@ -43,8 +46,8 @@ bool GameState::load()
                 break;
 
             case 2:
-                mPlayers.push_back(new Game::Player("Ace", sf::Color::White));
-                mPlayers.push_back(new Game::Player("Thorlar", sf::Color::Red));
+                mPlayers.push_back(new Game::Player("Player 1", sf::Color::Green));
+                mPlayers.push_back(new Game::Player("Player 2", sf::Color::Red));
 
                 FOR_EACH (auto& p, mPlayers)
                     p->synchWithFile();
@@ -109,6 +112,10 @@ bool GameState::load()
 
     if (loadStates.count(mLoadState) == 0)
     {
+        std::random_device dev;
+        std::uniform_int_distribution<int> distP(0, mPlayers.size() - 1);
+        mCurrentPlayer = distP(dev);
+
         sanitizeCamera();
         return true;
     }
@@ -185,8 +192,36 @@ void GameState::update(float dt)
         if (mMoving)
         {
             mPlayers[mCurrentPlayer]->finishTurn();
-            mCurrentPlayer = (mCurrentPlayer+1) % mPlayers.size();
+
+            int lastPlayer = mCurrentPlayer;
+            do
+            {
+                mCurrentPlayer = (mCurrentPlayer+1) % mPlayers.size();
+            } while(mPlayers[mCurrentPlayer]->getShips().empty() && mCurrentPlayer != lastPlayer);
+
+            unsigned int hasLiving = 0;
+
+            FOR_EACH (auto p, mPlayers)
+            {
+                if (!p->getShips().empty())
+                    hasLiving++;
+            }
             
+            if (hasLiving <= 1)
+            {
+                FOR_EACH(auto p, mPlayers)
+                {
+                    if (p->getShips().empty())
+                        continue;
+
+                    getApplication().getLogger().log("%s just won the game with %i kills!", Logger::Info, p->getName().c_str(), p->getKills());
+
+                    getManager().popState();
+                    getManager().pushState(new WinState(*p));
+                    return;
+                }
+            }
+
             mCurrentShip = mPlayers[mCurrentPlayer]->getShips().front();
             mCurrentShip->setTurn();
 
@@ -255,6 +290,36 @@ void GameState::update(float dt)
 void GameState::draw(sf::RenderTarget& target)
 {
     mWorld.draw(target);
+
+    if (mWorld.getAlive().empty() && !mPlayers[mCurrentPlayer]->getShips().empty())
+    {
+        auto mPos = getApplication().getMouse();
+        auto& s = *mPlayers[mCurrentPlayer]->getShips().front();
+
+        auto pos = s.getPosition();
+
+        float len = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
+        float ang = atan2(mPos.y - pos.y, mPos.x - pos.x);
+
+        sf::ConvexShape shape;
+        shape.setPointCount(7);
+
+        shape.setPoint(0, sf::Vector2f(len, 0));
+        shape.setPoint(1, sf::Vector2f(len - 10, 10));
+        shape.setPoint(2, sf::Vector2f(len - 10, 2.5f));
+        shape.setPoint(3, sf::Vector2f(10, 2.5f));
+        shape.setPoint(4, sf::Vector2f(10, -2.5f));
+        shape.setPoint(5, sf::Vector2f(len - 10, -2.5f));
+        shape.setPoint(6, sf::Vector2f(len - 10, -10));
+
+        shape.setOutlineColor(sf::Color::White);
+        shape.setOutlineThickness(1.f);
+        shape.setFillColor(sf::Color::Transparent);
+        shape.setPosition(pos);
+        shape.setRotation(ang * (180/M_PI));
+
+        target.draw(shape);
+    }
 }
 void GameState::drawUi(sf::RenderTarget& target)
 {

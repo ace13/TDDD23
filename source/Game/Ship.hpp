@@ -35,6 +35,9 @@ public:
     inline void collide(Entity& other) { };
     inline Type getType() const { return Type_Player; }
 
+    inline float getHealth() const { return mHealth; }
+    inline void setHealth(float h) { mHealth = h; }
+
     inline void setTurn(bool t = true) { mTurn = t; }
 
     void addGravity(const sf::Vector2f& pos, float strength);
@@ -45,6 +48,7 @@ private:
     sf::Vector2f mPosition;
     float mAngle;
     float mFlyTime, mAnimTime;
+    float mHealth;
     Player* mPlayer;
     b2Body* mBody;
 

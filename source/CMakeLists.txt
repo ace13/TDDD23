@@ -21,6 +21,8 @@ set(DEBUG_SOURCE
 set(GAME_SOURCE
     Game/GameState.hpp
     Game/GameState.cpp
+    Game/WinState.hpp
+    Game/WinState.cpp
 
     Game/Entity.hpp
     Game/Planet.hpp

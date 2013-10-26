@@ -62,7 +62,12 @@ bool StateManager::doEvent(const sf::Event& ev)
         bool s = state->event(ev);
         if (s)
             return true;
+
+        if (state->isDestroyed())
+            goto end;
     }
+
+    end:
 
     return false;
 }
@@ -103,6 +108,9 @@ void StateManager::doUpdate(float dt)
         {
             mLoad->unload(); ///\TODO Cache this.
             state->update(dt);
+
+            if (state->isDestroyed())
+                goto end; ///\FIXME Stupid hack
         }
         else
         {
@@ -110,6 +118,8 @@ void StateManager::doUpdate(float dt)
             mLoad->setLoadingText(state->getLoadState());
         }
     }
+
+    end:
 
     mStates.front()->update(dt); // Update the Telemetry Overlay
     if (mShowDebug)

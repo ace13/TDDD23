@@ -32,7 +32,7 @@ void Player::lostShip(Ship* s)
 {
     mTotalDeaths++;
     auto it = std::find(mCurrentShips.begin(), mCurrentShips.end(), s);
-    if (it == mCurrentShips.end())
+    if (it != mCurrentShips.end())
         mCurrentShips.erase(it);
 
     mDirty = true;
