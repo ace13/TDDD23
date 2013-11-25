@@ -21,3 +21,23 @@ It uses the following libraries, with the version(s) I'm using personally inside
 * Angelscript (2.25 and 2.28 SVN) - http://www.angelcode.com/angelscript/
 * Box2D (Revision 255 SVN) - http://box2d.org/
 * SFML (Git rev 86897a8 and 44b98b4) - http://sfml-dev.org/
+
+Building
+--------
+
+You need to get CMake, at least version 2.5, and run it using this folder as the source directory.
+CMake can generate makefiles for many operating systems and IDEs, anything from basic *nix makefiles to Visual Studio solutions for Windows.
+
+When you've built the game you also need to copy over the content of the resources folder, so that they live next to the binary.
+
+Not-so-frequently Asked Questions
+---------------------------------
+
+Q: But where are the nice graphics?
+A: I'm not an artist.
+
+Q: How about sounds then?
+A: Still not an artist.
+
+Q: ...music?
+A: I'll let you figure this one out yourself.
