@@ -2,6 +2,7 @@
 
 #include "../IState.hpp"
 #include "Player.hpp"
+#include <memory>
 
 namespace sf { class Font; }
 

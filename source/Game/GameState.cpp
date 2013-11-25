@@ -141,14 +141,14 @@ bool GameState::event(const sf::Event& ev)
     else if (ev.type == sf::Event::MouseButtonReleased && ev.mouseButton.button == sf::Mouse::Right)
     {
         sf::Vector2f mPos = getApplication().getMouse();
-        auto& ships = mPlayers[mCurrentPlayer]->getShips();
+        auto ships = mPlayers[mCurrentPlayer]->getShips();
         
         {
             auto& s = *ships.front();
 
             auto pos = s.getPosition();
 
-            float force = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
+            float force = std::min((float)sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
 
             Game::Weapon fired(&s, atan2(mPos.y - pos.y, mPos.x - pos.x), force);
             s.setTurn(false);
@@ -248,7 +248,7 @@ void GameState::update(float dt)
         sf::Vector2f center;
         FOR_EACH (auto e, list)
         {
-            auto& pos = e->getPosition();
+            auto pos = e->getPosition();
             center += pos;
             float rad = e->getRadius() * 5.f;
 
@@ -298,7 +298,7 @@ void GameState::draw(sf::RenderTarget& target)
 
         auto pos = s.getPosition();
 
-        float len = std::min(sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
+        float len = std::min((float)sqrt(((pos.x - mPos.x)*(pos.x - mPos.x)) + ((pos.y - mPos.y)*(pos.y - mPos.y))), 100.f);
         float ang = atan2(mPos.y - pos.y, mPos.x - pos.x);
 
         sf::ConvexShape shape;
